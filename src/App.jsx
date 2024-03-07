@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <h1 className="underline">test tailwindcss</h1>
+      <h1 className="underline">This is feature/product-page</h1>
     </>
   );
 }
