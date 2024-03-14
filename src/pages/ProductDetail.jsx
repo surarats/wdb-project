@@ -3,8 +3,10 @@ import axios from "axios";
 
 function ProductDetail() {
   return (
-    <div>ProductDetail</div>
-  )
+    <div>
+      <div>ProductDetail</div>
+    </div>
+  );
 }
 
-export default ProductDetail
+export default ProductDetail;
