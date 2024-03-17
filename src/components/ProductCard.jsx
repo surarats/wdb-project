@@ -10,7 +10,7 @@ const StyledRating = styled(Rating)({
   },
 });
 
-function ProductCard({ products }) {
+function ProductCard({ products, isList }) {
   return (
     <>
       {products.map((product) => (
@@ -18,7 +18,12 @@ function ProductCard({ products }) {
           key={product.id}
           className="flex flex-col gap-[14.75px] lg:flex-auto lg:max-w-[370px]"
         >
-          <img src={product.imageUrls[0]} className="object-cover h-[340px]" />
+          <img
+            src={product.imageUrls[0]}
+            className={`object-cover ${
+              isList === "productRecommend" ? "h-[340px]" : "h-[370px]"
+            } lg:h-[370px]`}
+          />
           <div className="flex flex-col gap-[7.38px] ">
             <h3 className="text-[#222] font-bold text-[22.13px] leading-[29.5px] whitespace-nowrap overflow-hidden text-ellipsis">
               {product.name}

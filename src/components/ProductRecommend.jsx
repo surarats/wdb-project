@@ -38,7 +38,7 @@ function ProductRecommend() {
         People also like these
       </h2>
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-4">
-        <ProductCard products={productsRecommend} />
+        <ProductCard products={productsRecommend} isList={"productRecommend"} />
       </div>
     </div>
   );
