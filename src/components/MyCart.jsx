@@ -21,7 +21,14 @@ function MyCart() {
         <CartSummary isEmptyCart={isEmptyCart} />
       </div>
 
-      {isEmptyCart ? <ProductRecommend /> : ""}
+      {isEmptyCart && (
+        <div className="flex flex-col">
+          <h2 className="text-[32px] font-bold leading-[48px] mb-10">
+            People also like these
+          </h2>
+          <ProductRecommend />
+        </div>
+      )}
     </>
   );
 }
