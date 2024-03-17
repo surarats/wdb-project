@@ -18,12 +18,23 @@ function ProductCard({ products, isList }) {
           key={product.id}
           className="flex flex-col gap-[14.75px] lg:flex-auto lg:max-w-[370px]"
         >
-          <img
-            src={product.imageUrls[0]}
-            className={`object-cover ${
-              isList === "productRecommend" ? "h-[340px]" : "h-[370px]"
-            } lg:h-[370px]`}
-          />
+          <div className="relative">
+            <img
+              src={product.imageUrls[0]}
+              className={`object-cover w-full ${
+                isList === "productRecommend" ? "h-[340px]" : "h-[370px]"
+              } lg:h-[370px]`}
+            />
+            {product.price > product.promotionalPrice && (
+              <div className="flex items-center absolute top-6 right-0 bg-[#FF000D] text-white text-[16px] leading-5 py-1 px-2.5 h-[34px]">
+                {/* {`- ${
+                  ((product.price - product.promotionalPrice) / product.price) *
+                  100
+                }%`} */}
+                Sale
+              </div>
+            )}
+          </div>
           <div className="flex flex-col gap-[7.38px] ">
             <h3 className="text-[#222] font-bold text-[22.13px] leading-[29.5px] whitespace-nowrap overflow-hidden text-ellipsis">
               {product.name}
@@ -43,9 +54,22 @@ function ProductCard({ products, isList }) {
                 />
               }
             />
-            <p className="text-2xl font-bold text-end">
-              THB {product.price.toLocaleString("th-TH")}
-            </p>
+            <div className="flex justify-end items-center gap-4">
+              {product.price > product.promotionalPrice ? (
+                <>
+                  <p className="line-through text-sm text-[#626262] font-semibold">
+                    {product.price.toLocaleString("th-TH")}
+                  </p>{" "}
+                  <p className="text-2xl font-bold text-end text-[#FF000D]">
+                    THB {product.promotionalPrice.toLocaleString("th-TH")}
+                  </p>
+                </>
+              ) : (
+                <p className="text-2xl font-bold text-end">
+                  THB {product.price.toLocaleString("th-TH")}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       ))}
