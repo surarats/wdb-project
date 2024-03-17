@@ -11,8 +11,8 @@ function CartItem() {
             <h3 className="font-bold text-2xl">Reyon Long Sleeve Shirt</h3>
             <img src="/images/delete.png" className="w-[40px] h-[40px]" />
           </div>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 flex-1">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:flex-wrap">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 flex-auto ">
               <div className="col-span-2 flex flex-col gap-2 lg:col-span-1 min-w-24 ">
                 <label htmlFor="color" className="leading-5">
                   Color
@@ -38,7 +38,7 @@ function CartItem() {
                 </select>
               </div>
             </div>
-            <h4 className="font-bold text-2xl leading-8 text-end">
+            <h4 className="font-bold text-2xl leading-8 text-end text-nowrap flex-1">
               THB 2,000.00
             </h4>
           </div>
