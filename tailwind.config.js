@@ -10,6 +10,7 @@ export default {
         "primary-700": "#C1CD00",
         "secondary-s": "#222222",
         "secondary-700": "#626262",
+        "danger": "#FF000D",
       },
     },
   },
