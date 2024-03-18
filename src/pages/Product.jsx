@@ -1,15 +1,24 @@
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
+import axios from "axios";
 
-function Home() {
+function Product() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const options = ["Price-Low to high", "Price=High to low", "Ratings"];
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
-    setIsOpen(false);
+    // setIsOpen(false);
   };
+
+  const handleApply = async () => {
+    try{
+      await axios.get()
+    }catch(error){
+      console.log(error)
+    }
+  }
 
   return (
     <div className="main flex flex-col h-[400px] border border-red-600">
@@ -29,60 +38,44 @@ function Home() {
           </svg>
         </div>
 
-      {isOpen && <div className="h-[50px] bg-white w-full fixed bottom-0 ">Test Filter Box</div>}
-
-      {isOpen && (
-        <div className="dropdown-options flex flex-col items-start w-fit border">
-          {options.map((option, index) => (
-            <>
-              <div className="header-sortby justify-between">
-                <a><p>Cancel</p></a>
-                <p>Sort by</p>
-                <a><p>Reset</p></a>
-              </div>
-              <div className="radio-options flex justify-end">
-                <input
-                  type="radio"
-                  value={option}
-                  checked={selectedOption === option}
-                  onChange={() => handleOptionChange(option)}
-                />
-                <label key={index}>
-                  {option}
-                </label>
-              </div>    
-              <div>
-                <button>Apply</button>
-              </div>    
-            </>                   
-          ))}
-        </div>
-      )}
+      {isOpen && <div className="bg-white w-full fixed bottom-0 rounded-t-2xl px-[18px]">
+      <div className="header-sortby flex justify-between py-8">
+                  <div className="text-[16px] text-[#3366FF] leading-5 font-normal">Cancel</div>
+                  <div className="text-[18px] leading-6 font-normal">Sort by</div>
+                  <div className="text-[16px] text-[#3366FF] leading-5 font-normal">Reset</div>
+      </div>          
+        {options.map((option, index) => (
+              <>
+                <div className="radio-options flex justify-start">
+                  <input
+                    type="radio"
+                    value={option}
+                    checked={selectedOption === option}
+                    onChange={() => handleOptionChange(option)}
+                    // className="ml-[18px] h-6 w-6 bg-black text-green-500"
+                    // className="ml-[18px] h-6 w-6 bg-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                    // className="ml-[18px] h-6 w-6 accent-[#C1CD00]"
+                    className="ml-[18px] h-6 w-6 text-[#C1CD00] bg-[#C1CD00] border-[#C1CD00]"
+                  />
+                  <label key={index} className="text-[16px] leading-5 font-normal ml-4 my-3">
+                    {option}
+                  </label>
+                </div>   
+              </>                         
+            ))}
+            <div className="flex justify-center pb-[22px]">
+              {/* <button className="bg-black text-white">Apply</button> */}
+              <button type="button" onClick={handleApply} className="bg-black text-white font-semibold py-[17px] px-[147px] mt-6">Apply</button>
+              
+            </div>  
+          </div>
+          }
       </div>
-      
-      {/* <select value= {selectedOption} onChange={handleOptionChange}>
-        <option value="">Sort by</option>
-        <option value="option1">Price-Low to high</option>
-        <option value="option1">Price-High to low</option>
-        <option value="option1">Ratings</option>
-      </select> */}
-          {/* <div className="choice1 border bg-red-300 absolute bottom-0  left-0 rigth-0 w-full flex flex-col">
-            <input type="radio" name="sortProducts" value="" id="sortByLowToHigh"/>
-            <label htmlFor="sortByLowToHigh" >Price-Low to high</label> 
-            <input type="radio" name="sortProducts" value="" id="sortByLowToHigh"/>
-            <label htmlFor="sortByLowToHigh" >Price-High to low</label> 
-            <input type="radio" name="sortProducts" value="" id="sortByLowToHigh"/>
-            <label htmlFor="sortByLowToHigh" >Ratings</label> 
-          </div> */}
 
       {/* <Sidebar /> */}
       <div className="container">
         <div className="container-title flex">
           <h1 className="title">Womans Clothing</h1>
-          {/* <div className="sortbox border">
-            Sort by
-          </div> */}
-          
         </div>
         <div className="container-cards">
           <h1>These are cards</h1>
@@ -92,4 +85,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Product;
