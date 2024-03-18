@@ -33,13 +33,8 @@ function ProductRecommend() {
   }, []);
 
   return (
-    <div className="flex flex-col">
-      <h2 className="text-[32px] font-bold leading-[48px] mb-10">
-        People also like these
-      </h2>
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-4">
-        <ProductCard products={productsRecommend} isList={"productRecommend"} />
-      </div>
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-4">
+      <ProductCard products={productsRecommend} isList={"productRecommend"} />
     </div>
   );
 }
