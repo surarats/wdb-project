@@ -27,10 +27,6 @@ function ProductCard({ products, isList }) {
             />
             {product.price > product.promotionalPrice && (
               <div className="flex items-center absolute top-6 right-0 bg-[#FF000D] text-white text-[16px] leading-5 py-1 px-2.5 h-[34px]">
-                {/* {`- ${
-                  ((product.price - product.promotionalPrice) / product.price) *
-                  100
-                }%`} */}
                 Sale
               </div>
             )}
