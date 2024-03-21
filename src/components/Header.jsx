@@ -1,8 +1,12 @@
-import react, { useState } from "react";
+import react, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import axios from "axios";
 
 function Header() {
+  const [categories, setCategories] = useState([]);
   const [isMenuToggle, setIsMenuToggle] = useState(false);
+
   const handleMenuToggle = () => {
     document.querySelector("body").style.overflow = isMenuToggle
       ? "scroll"
@@ -10,11 +14,24 @@ function Header() {
     setIsMenuToggle(!isMenuToggle);
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.storefront.wdb.skooldio.dev/categories"
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
-    // Navbar Container
-    <header className="bg-[#222] relative">
-      <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center">
-        {/* Navber Left*/}
+    <header className="bg-[#222] fixed w-full top-0 left-0 z-50 ">
+      <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center lg:pl-0">
         <div className="flex flex-col gap-10 lg:flex-row w-full">
           <div className="flex items-center gap-2 ">
             {/* Menu Button */}
@@ -196,21 +213,20 @@ function Header() {
           </div>
           {/* Menu List */}
           <ul className="text-white transition-[flex] duration-700 hidden  lg:flex lg:flex-row lg:justify-start">
-            <Link to={"/products/all-men"}>
-              <li className="py-3 pr-6 pl-0">Men</li>
-            </Link>
-            <Link to={"/products/all-ladies"}>
-              <li className="py-3 pr-6 pl-0">Women</li>
-            </Link>
-            <Link to={"/products/men-shoes"}>
-              <li className="py-3 pr-6 pl-0">Shoes</li>
-            </Link>
-            <Link to={"/products/men-accessories"}>
-              <li className="py-3 pr-6 pl-0">Accessories</li>
-            </Link>
+            {categories.map(
+              (category) =>
+                !category.parentId && (
+                  <Link
+                    to={`/products/${category.permalink}`}
+                    key={`${new Date().getTime}${category.id}`}
+                  >
+                    <li className="py-3 pr-6 pl-0">{category.name}</li>
+                  </Link>
+                )
+            )}
           </ul>
         </div>
-        {/* Navbar Right */}
+
         <Link to="/cart">
           <div className="relative">
             {/* Cart Button */}
@@ -235,19 +251,11 @@ function Header() {
         </Link>
       </nav>
 
-      {isMenuToggle && (
-        <>
-          <div
-            className="absolute top-0 w-full h-screen bg-black opacity-50 z-20  lg:hidden transition-all delay-150 duration-300 ease-in-out"
-            onClick={handleMenuToggle}
-          ></div>
-        </>
-      )}
-      <div
-        className={`absolute top-0  w-[321px] h-screen bg-white z-30 rounded-e-2xl transition lg:hidden ${
-          isMenuToggle ? "left-0" : "left-[-100%]"
-        } transition-all  duration-300 ease-in-out`}
-      ></div>
+      <Sidebar
+        isMenuToggle={isMenuToggle}
+        handleMenuToggle={handleMenuToggle}
+        categories={categories}
+      />
     </header>
   );
 }

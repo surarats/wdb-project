@@ -15,7 +15,7 @@ function ProductCard({ products, isList }) {
     <>
       {products.map((product) => (
         <div
-          key={product.id}
+          key={`${new Date().getTime}${product.id}`}
           className="flex flex-col gap-[14.75px] lg:flex-auto lg:max-w-[370px]"
         >
           <div className="relative">
