@@ -3,12 +3,12 @@ import axios from "axios";
 
 import ProductCard from "./ProductCard";
 
-function ProductAll({ category }) {
+function ProductAll({ manage, category }) {
   const [products, setProducts] = useState([]);
   const fetchProduct = async (category) => {
     try {
       const response = await axios.get(
-        `https://api.storefront.wdb.skooldio.dev/products?categories=${category}`
+        `https://api.storefront.wdb.skooldio.dev/products?${manage}=${category}`
       );
       setProducts(response.data.data);
     } catch (error) {

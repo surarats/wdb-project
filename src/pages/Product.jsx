@@ -7,16 +7,16 @@ import ProductAll from "../components/ProductAll";
 
 function Product() {
   const isLg = useMediaQuery("(min-width:1024px)");
-  let { category } = useParams();
+  let { manage, category } = useParams();
 
   return (
     <div className="bg-[#fff] lg:min-h-screen">
       <div className="mx-4 lg:mx-auto lg:max-w-[1600px] pb-10">
         <div className="flex pt-20 lg:pt-[98px] lg:gap-[10%]">
           {/* Sidebar Desktop */}
-          {isLg && <SidebarLg category={category} />}
+          {isLg && <SidebarLg manage={manage} category={category} />}
           {/* Product List Show */}
-          <ProductAll category={category} />
+          <ProductAll manage={manage} category={category} />
         </div>
       </div>
     </div>
