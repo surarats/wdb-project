@@ -92,7 +92,7 @@ function CartSummary({ isEmptyCart }) {
           Check out
         </Link>
         <Link
-          to="/"
+          to="/products/categories/all-men"
           className={`w-full grid place-content-center  leading-5 h-[54px] py-[7px] px-2.5 border border-[#e1e1e1] disabled ${
             isEmptyCart
               ? "disabled bg-[#fff] text-[#9f9f9f]"

@@ -19,37 +19,11 @@ function SidebarLg() {
     }
   };
 
-  // Featch Collection & Update Menu Action
-  const fetchCollection = async (parentId) => {
-    try {
-      const response = await axios.get(
-        "https://api.storefront.wdb.skooldio.dev/collections"
-      );
-      setCollection(response.data);
-      const currentParent = parentToggleCheck.find((p) => p.id === parentId);
-      if (currentParent) {
-        setParentToggleCheck([
-          ...parentToggleCheck.filter((p) => p.id !== currentParent.id),
-          {
-            id: currentParent.id,
-            toggle: !currentParent.toggle,
-          },
-        ]);
-      } else {
-        setParentToggleCheck([
-          ...parentToggleCheck,
-          {
-            id: parentId,
-            toggle: true,
-          },
-        ]);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
-  // Featch Catgories & Update Menu Action
+  // Featch Catgories & Update Menu to Show
   const fectChildCategories = async (parentId) => {
     try {
       const currentParent = parentToggleCheck.find((p) => p.id === parentId);
@@ -80,13 +54,39 @@ function SidebarLg() {
     }
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  // Featch Collection & Update Menu to Show
+  const fetchCollection = async (parentId) => {
+    try {
+      const response = await axios.get(
+        "https://api.storefront.wdb.skooldio.dev/collections"
+      );
+      setCollection(response.data);
+      const currentParent = parentToggleCheck.find((p) => p.id === parentId);
+      if (currentParent) {
+        setParentToggleCheck([
+          ...parentToggleCheck.filter((p) => p.id !== currentParent.id),
+          {
+            id: currentParent.id,
+            toggle: !currentParent.toggle,
+          },
+        ]);
+      } else {
+        setParentToggleCheck([
+          ...parentToggleCheck,
+          {
+            id: parentId,
+            toggle: true,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex flex-col w-[15%]">
-      {/* Parent*/}
+      {/*Categories Parent*/}
       {categories.map((category) => (
         <React.Fragment key={`${new Date().getTime}${category.id}`}>
           {!category.parentId && (
@@ -120,7 +120,7 @@ function SidebarLg() {
               </svg>
             </div>
           )}
-          {/* All item */}
+          {/* All Item Child */}
           {parentToggleCheck.map(
             (p) =>
               p.toggle &&
@@ -145,7 +145,7 @@ function SidebarLg() {
                 )
           )}
 
-          {/* Other Child */}
+          {/* Categories Child */}
           {parentToggleCheck.map(
             (p) =>
               p.toggle &&
@@ -171,7 +171,8 @@ function SidebarLg() {
           )}
         </React.Fragment>
       ))}
-      {/* collection parent */}
+
+      {/* Collection Parent */}
       <div
         className="flex justify-between items-center py-3 cursor-pointer "
         onClick={() => fetchCollection("collection")}
@@ -197,7 +198,8 @@ function SidebarLg() {
           />
         </svg>
       </div>
-      {/* collection child */}
+
+      {/* Collection Child */}
       {parentToggleCheck.map(
         (p) =>
           p.toggle &&
@@ -209,7 +211,7 @@ function SidebarLg() {
             >
               <Link
                 to={`/products/collection/${collectionChild.permalink}`}
-                className="p-[10px] font-semibold text-sm text-[#262626] hover:bg-[#DEF81C] transition-all duration-100 ease-in-out rounded-md cursor-pointer"
+                className="p-[10px] font-semibold text-sm text-[#262626] hover:bg-[#DEF81C] transition-all duration-100 ease-in-out rounded-md"
               >
                 {collectionChild.name}
               </Link>

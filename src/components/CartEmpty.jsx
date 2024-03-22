@@ -218,7 +218,7 @@ function CartEmpty() {
         </p>
       </div>
       <Link
-        to="/"
+        to="/products/categories/all-men"
         className="bg-[#222] text-white h-[54px] py-[17px] px-2.5 lg:mb-[137px]"
       >
         Continue shopping
