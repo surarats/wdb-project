@@ -82,7 +82,7 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
                       {category.name}
                     </span>
                   </div>
-                  {/* All items */}
+                  {/* All Item Child */}
                   <Link
                     to={`/products/categories/${category.permalink}`}
                     onClick={() => {
@@ -125,7 +125,7 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
             </div>
           )}
 
-          {/* Parent*/}
+          {/*Categories Parent*/}
           {hasParentId === "isParent"
             ? categories.map(
                 (category) =>
@@ -156,7 +156,7 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
                   )
               )
             : hasParentId === "isChild"
-            ? //Other Child
+            ? //Categories Child
               childCategories
                 .filter((category) => category.parentId !== null)
                 .map((category) => (
@@ -175,7 +175,8 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
                     </span>
                   </Link>
                 ))
-            : childCategories.map((collection) => (
+            : //Collection Child
+              childCategories.map((collection) => (
                 <Link
                   key={`${new Date().getTime}${collection.id}`}
                   to={`/products/collection/${collection.permalink}`}
@@ -192,7 +193,7 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
                 </Link>
               ))}
 
-          {/* Collection */}
+          {/* Collection Parent */}
           {hasParentId === "isParent" ? (
             <div
               className="flex justify-between items-center gap-2 cursor-pointer text-[#222] hover:bg-[#DEF81C] transition-all duration-100 ease-in-out rounded-md px-8 py-3"

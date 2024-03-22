@@ -3,6 +3,7 @@ import React from "react";
 import Rating from "@mui/material/Rating";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import { styled } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
 const StyledRating = styled(Rating)({
   "& .MuiRating-iconFilled": {
@@ -14,9 +15,10 @@ function ProductCard({ products, isList }) {
   return (
     <>
       {products.map((product) => (
-        <div
+        <Link
+          to={`/products/${product.permalink}`}
           key={`${new Date().getTime}${product.id}`}
-          className="flex flex-col gap-[14.75px] lg:flex-auto lg:max-w-[370px]"
+          className="flex flex-col gap-[14.75px] lg:flex-auto lg:max-w-[370px] hover:shadow-lg transition-all duration-100 ease-in-out"
         >
           <div className="relative">
             <img
@@ -67,7 +69,7 @@ function ProductCard({ products, isList }) {
               )}
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </>
   );

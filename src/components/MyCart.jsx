@@ -5,10 +5,10 @@ import CartSummary from "../components/CartSummary";
 import ProductRecommend from "./ProductRecommend";
 
 function MyCart() {
-  const [isEmptyCart, setIsEmtpyCart] = useState(true);
+  const [isEmptyCart, setIsEmtpyCart] = useState(false);
   return (
     <>
-      <h1 className="font-bold text-[32px] text-[#222] leading-[48px] py-[34px] lg:ps-6">
+      <h1 className="font-bold text-[32px] text-[#222] leading-[48px] py-[34px] lg:ps-6 pt-20 lg:pt-[98px]">
         My cart
       </h1>
       <div className="flex flex-col gap-10 lg:flex-row mb-10 lg:mb-20">
