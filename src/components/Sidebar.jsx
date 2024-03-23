@@ -24,7 +24,6 @@ function Sidebar({ isMenuToggle, handleMenuToggle, categories }) {
     setHasParentId("isCollection");
   };
 
-  console.log(childCategories);
   return (
     <>
       {isMenuToggle && (
