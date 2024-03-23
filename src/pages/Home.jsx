@@ -1,4 +1,5 @@
 import React from "react";
+import ProductRecommend from "../components/ProductRecommend";
 
 function Home() {
   return (
@@ -77,6 +78,11 @@ function Home() {
               View More
             </div>
           </div>
+        <div className="flex flex-col">
+          <h2 className="text-[32px] font-bold leading-[48px] mb-10 text-center">
+            Featured Product
+          </h2>
+          <ProductRecommend />
         </div>
       </div>
     </div>
