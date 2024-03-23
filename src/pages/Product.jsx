@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
 import axios from "axios";
+=======
+import React  from "react";
+import { useParams } from "react-router-dom";
+
+import ProductAll from "../components/ProductAll";
+>>>>>>> 37711a8 (fourth commit)
 
 function Product() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +27,9 @@ function Product() {
     }
   }
 
+
   return (
+<<<<<<< HEAD
     <div className="main flex flex-col h-[400px] border border-red-600">
       <div className="flex flex-col items-center">
         <h1 className="text-[32px] font-bold px-6">Womans Clothing</h1>
@@ -79,10 +88,23 @@ function Product() {
         </div>
         <div className="container-cards">
           <h1>These are cards</h1>
+=======
+    <div className="bg-[#fff] lg:min-h-screen">
+      <div className="mx-4 lg:mx-auto lg:max-w-[1600px] pb-10">
+        <div className="flex pt-20 lg:pt-[98px] lg:gap-[10%]">
+          <ProductAll category={category} />
+>>>>>>> 37711a8 (fourth commit)
         </div>
       </div>
     </div>
   );
 }
 
+
+
 export default Product;
+
+
+
+
+

@@ -4,8 +4,13 @@ import { Link } from "react-router-dom";
 function Header() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   return (
+<<<<<<< HEAD
     // Navbar Container
     <header className="bg-[#222]">
+=======
+    // Navbar Container      
+    <header className="bg-[#222] relative">
+>>>>>>> 37711a8 (fourth commit)
       <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center">
         {/* Navber Left*/}
         <div className="flex flex-col gap-10 lg:flex-row w-full">
