@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function CartItemSummary({ item, setTotalQty, setSubtotal }) {
+function CartItemSummary({ item, cartList }) {
   const [product, setProduct] = useState({});
 
   const options = {
-    style: "decimal", // Other options: 'currency', 'percent', etc.
+    style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   };
@@ -15,19 +15,11 @@ function CartItemSummary({ item, setTotalQty, setSubtotal }) {
       `https://api.storefront.wdb.skooldio.dev/products/${productPermalink}`
     );
     setProduct(response.data);
-    // setTotalQty((prev) => Number(prev) + Number(item.quantity));
   };
 
   useEffect(() => {
     fetchProductDetail(item.productPermalink);
   }, []);
-
-  // useEffect(() => {
-  //   if (item.quantity && product.promotionalPrice) {
-  //     let result = product.promotionalPrice * Number(item.quantity);
-  //     setSubtotal((prev) => prev + result);
-  //   }
-  // }, [product, item.quantity]);
 
   return (
     <div className="flex flex-col gap-6 text-[#222]">

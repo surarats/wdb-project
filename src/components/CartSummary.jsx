@@ -14,25 +14,26 @@ function CartSummary({ cartList }) {
     maximumFractionDigits: 2,
   };
 
-  const calculateTotal = (productPermalink) => {
-    let totalQtyResult = 0;
-    let totalPriceResult = 0;
+  const fetchPriceOfProduct = async (productPermalink) => {
+    const response = await axios.get(
+      `https://api.storefront.wdb.skooldio.dev/products/${productPermalink}`
+    );
+    return response.data.promotionalPrice;
+  };
 
+  let totalQtyResult = 0;
+  let totalPriceResult = 0;
+  const calculateTotal = () => {
     if (cartList) {
       cartList.items.forEach(async (i) => {
         let price = await fetchPriceOfProduct(i.productPermalink);
-        console.log(price);
-        totalQtyResult = Number(totalQtyResult) + Number(i.quantity);
-        totalPriceResult =
-          Number(totalPriceResult) + Number(price) * Number(i.quantity);
+        totalQtyResult += Number(i.quantity);
+        totalPriceResult += Number(price) * Number(i.quantity);
+        setTotalQty(totalQtyResult);
+        setSubtotal(totalPriceResult);
       });
-      console.log(totalPriceResult);
-      setTotalQty(totalQtyResult);
-      setSubtotal(totalPriceResult);
     }
   };
-
-  console.log(subtotal);
 
   useEffect(() => {
     calculateTotal();
@@ -85,12 +86,7 @@ function CartSummary({ cartList }) {
           </div>
 
           {cartList.items.map((item) => (
-            <CartItemSummary
-              key={new Date().getTime}
-              item={item}
-              setTotalQty={setTotalQty}
-              setSubtotal={setSubtotal}
-            />
+            <CartItemSummary key={item.id} item={item} cartList={cartList} />
           ))}
 
           <div className="border border-[#e1e1e1]"></div>
