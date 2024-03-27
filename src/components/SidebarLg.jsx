@@ -102,8 +102,8 @@ function SidebarLg() {
                   parentToggleCheck.find(
                     (p) => p.id === category.id && p.toggle
                   )
-                    ? "-rotate-180 transition-all  duration-100 ease-in-out"
-                    : "transition-all duration-700 ease-in-out"
+                    ? "-rotate-180 transition-all  duration-300 ease-in-out"
+                    : "transition-all duration-300 ease-in-out"
                 }`}
                 width="40"
                 height="40"
@@ -211,7 +211,7 @@ function SidebarLg() {
             >
               <Link
                 to={`/products/collection/${collectionChild.permalink}`}
-                className="p-[10px] font-semibold text-sm text-[#262626] hover:bg-[#DEF81C] transition-all duration-100 ease-in-out rounded-md"
+                className="p-[10px] font-semibold text-sm text-[#262626] hover:bg-[#DEF81C] transition-all duration-300 ease-in-out rounded-md"
               >
                 {collectionChild.name}
               </Link>

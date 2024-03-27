@@ -1,6 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 function Footer() {
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.storefront.wdb.skooldio.dev/categories"
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
     // Footer Container
     <div className="flex flex-col gap-4 py-6 px-[18px] items-center bg-[#222] text-white lg:px-40 lg:py-4">
@@ -11,10 +30,17 @@ function Footer() {
             Featured product
           </div>
           <ul className="flex flex-col gap-4 items-center font-semibold text-[18px] leading-6 lg:items-start">
-            <li>Men</li>
-            <li>Ladies</li>
-            <li>Shoes</li>
-            <li>Accessories</li>
+            {categories.map(
+              (category) =>
+                !category.parentId && (
+                  <Link
+                    to={`/products/categories/${category.permalink}`}
+                    key={category.id}
+                  >
+                    <li className="">{category.name}</li>
+                  </Link>
+                )
+            )}
           </ul>
         </div>
         {/* Customer Services */}
