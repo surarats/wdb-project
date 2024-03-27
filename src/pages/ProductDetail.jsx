@@ -1,26 +1,38 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// shoes-chelsea-boots
+// shoes-chelsea-boots ของลด มี size มากกว่า 5 เป็นเลข
 // shirts-relaxed-tailored-jacket
-// shoes-fashionable-high-top-canvas-sneakers
+// shoes-fashionable-high-top-canvas-sneakers ของลด มี size มากกว่า 5 เป็นเลข
+// shirts-boxy-tailored-jacket
+// accessories-classic-leather-crossbody-bag
+// Abstratct Printed Scarf
+// shirts-cotton-short-sleeve-dress
 
-const permalink = "shirts-relaxed-tailored-jacket";
+const permalink = "shirts-cotton-short-sleeve-dress";
 
 function ProductDetail() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [stock, setStock] = useState(0);
+
+  //array that create from products used to reformat
+  const [skuCode, setSkuCode] = useState([]);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [remains, setRemains] = useState([]);
   const [colorCode, setColorCode] = useState([]);
-  const [stock, setStock] = useState(0);
 
-  // console.log(products.variants);
+  //data after reformat
+  const [productsData, setProductsData] = useState({});
+
+  // const [firstImage, setFirstImage] = useState(0);
 
   // `https://api.storefront.wdb.skooldio.dev/products/${permalink}`
+  // `http://localhost:3000/`
 
+  // fetchdata
   useEffect(() => {
     setIsLoading(true);
     const fetchData = async () => {
@@ -30,6 +42,9 @@ function ProductDetail() {
         );
         setProducts(result.data);
 
+        const variantSkuCode = result.data.variants.map(
+          (variant) => variant.skuCode
+        );
         const variantColors = result.data.variants.map(
           (variant) => variant.color
         );
@@ -43,6 +58,14 @@ function ProductDetail() {
           (variant) => variant.colorCode
         );
 
+        setSkuCode([]);
+        setColors([]);
+        setSizes([]);
+        setRemains([]);
+        setColorCode([]);
+        setProductsData({});
+
+        setSkuCode(variantSkuCode);
         setColors(variantColors);
         setSizes(variantSizes);
         setRemains(variantRemains);
@@ -55,6 +78,67 @@ function ProductDetail() {
     };
     fetchData();
   }, []);
+
+  const sentSelecedProductToCart = async () => {
+    const myCart = [
+      {
+        id: "vWHWEhKkek4j4mYs0rJ2",
+        skuCode: "C0900610",
+        quantity: "1",
+        productPermalink: "shirts-boxy-tailored-jacket",
+      },
+      {
+        id: "6Vui18TapiaaJ2XQpOz6",
+        skuCode: "C0900609",
+        quantity: "11111",
+        productPermalink: "shirts-boxy-tailored-jacket",
+      },
+      {
+        id: "Pv1JzFlF49QfwkNlA0r8",
+        skuCode: "C0900608",
+        quantity: "1",
+        productPermalink: "shirts-boxy-tailored-jacket",
+      },
+      {
+        id: "I7FnlhdKqb5l5FtDXJdI",
+        skuCode: "C0900601",
+        quantity: "1",
+        productPermalink: "shirts-boxy-tailored-jacket",
+      },
+    ];
+    const exitingItem = myCart.find((item) => item.skuCode == selectedSkuCode);
+    try {
+      // create new cart
+      if (!localStorage.getItem("Cart")) {
+        const respondData = await axios.post(
+          "https://api.storefront.wdb.skooldio.dev/carts",
+          {
+            items: [{ skuCode: selectedSkuCode, quantity: selectedQty }],
+          }
+        );
+        console.log(respondData);
+        localStorage.setItem("Cart", respondData?.data?.id);
+        // create exits cart
+      } else if (!exitingItem) {
+        const currentId = localStorage.getItem("Cart");
+        const respondData = await axios.post(
+          `https://api.storefront.wdb.skooldio.dev/carts/${currentId}/items`,
+          { items: [{ skuCode: selectedSkuCode, quantity: selectedQty }] }
+        );
+        console.log(respondData);
+        // update exits item same spec
+      } else {
+        const id = exitingItem.id;
+        const currentId = localStorage.getItem("Cart");
+        await axios.patch(
+          `https://api.storefront.wdb.skooldio.dev/carts/${currentId}/items/${id}`,
+          { skuCode: selectedSkuCode, quantity: selectedQty }
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   // Check Stock
   useEffect(() => {
@@ -73,18 +157,173 @@ function ProductDetail() {
     return products.price !== products.promotionalPrice;
   };
 
+  // reform json format
+  useEffect(() => {
+    if (!productsData || Object.keys(productsData).length === 0) {
+      // Check if productsData is empty
+      const newFormatData = colors.reduce((acc, currColor, index) => {
+        const currentSize = sizes[index];
+        const currentRemain = remains[index];
+        const currentColorCode = colorCode[index];
+        const currentSkuCode = skuCode[index]; // New addition
+        // Create a new size object if it doesn't exist
+        if (!acc[currColor]) {
+          acc[currColor] = { sizes: {} };
+        }
+        // Check if the product has size options
+        // if (currentSize && currentSize.length > 0) {
+        // Add size and remaining quantity to the current color's sizes object
+        if (!currentSize)
+          acc[currColor].sizes["NULL"] = {
+            remains: currentRemain,
+            skuCode: currentSkuCode,
+          };
+        else {
+          acc[currColor].sizes[currentSize] = {
+            remains: currentRemain,
+            skuCode: currentSkuCode,
+          };
+        }
+        // };}
+        // } else {
+        //   // If the product has no size options, directly add remains and colorCode
+        //   acc[currColor].remains = currentRemain;
+        //   acc[currColor].colorCode = currentColorCode;
+        //   acc[currColor].skuCode = currentSkuCode;
+        // }
+        // Add color code to the current color object
+        acc[currColor].colorCode = currentColorCode;
+        return acc;
+      }, {});
+
+      // Sort sizes within the sizes object
+      Object.values(newFormatData).forEach((product) => {
+        if (product.sizes) {
+          product.sizes = Object.fromEntries(
+            Object.entries(product.sizes).sort((a, b) => {
+              const order = { S: 0, M: 1, L: 2, XL: 3 };
+              return order[a[0]] - order[b[0]];
+            })
+          );
+        }
+      });
+
+      setProductsData(newFormatData);
+    }
+  }, [productsData, colors, sizes, remains, colorCode, skuCode]);
+
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSkuCode, setSelectedSkuCode] = useState("");
+  const [selectedQty, setSelectedQty] = useState("1");
+  const [isColorDisabled, setColorDisabled] = useState(false);
+  const [isSizeDisabled, setSizeDisabled] = useState(false);
+
+  // ใช้ set defaultColor defaultSize เพื่อแสดงผลในการ render ครั้งแรก watch [productsData]
+  useEffect(() => {
+    // เช็คว่า productsData มีจริงไหม
+    if (productsData && Object.keys(productsData).length > 0) {
+      let defaultColor = null;
+      let defaultSize = null;
+      let allColorsOutOfStock = true;
+
+      //วนตลอดทุกสีถ้าสีไหนมี remains เมื่อไหร่ ก็ set defaultColor defaultSize
+      for (const color of Object.keys(productsData)) {
+        const colorData = productsData[color];
+        // เอา key ที่อยู่ภายใน size ทุก key มา filter หา remains ถ้าเจอว่ามี remains เก็บไว้ใน availableSizes
+        const availableSizes = Object.keys(colorData.sizes).filter(
+          (size) => colorData.sizes[size].remains > 0
+        );
+
+        if (availableSizes.length > 0) {
+          // เซ็ตสีปัจจุบัน ไซส์ปัจจุบัน เป็น default
+          defaultColor = color;
+          // ที่เป็น [0] ศูนย์เพราะมาจาก array (.filter)
+          defaultSize = availableSizes[0]; //ถ้าไม่เซ็ต size, qty แสดงไม่ถูก
+          // พร้อม set allColorsOutOfStock เป็น false
+          allColorsOutOfStock = false;
+          // เจอสีไหนสีแรกก็ออกเลย
+          break;
+        }
+      }
+
+      // ถ้ามันวนหมดไม่เจอสีไหนมี remains เลยก็จะมา if นี้ต่อ
+      // ถ้าของหมดจริง(allColorsOutOfStock) ซึ่ง initail ไว้แล้ว
+      if (allColorsOutOfStock && Object.keys(productsData).length > 0) {
+        // ให้เสร็จสีเริ่มต้นเป็นสีแรกไปเลย
+        defaultColor = Object.keys(productsData)[0];
+        // set ให้สี disable เพื่อทำเงื่อนไข render
+        setColorDisabled(true); // Disable color selection
+      } else {
+        setColorDisabled(false); // Enable color selection
+      }
+
+      setSelectedColor(defaultColor);
+      setSelectedSize(defaultSize);
+    }
+  }, [productsData]);
+
+  // function เพื่อ set สีตามจาก onclick
+  const handleColorChange = (color) => {
+    // set สีให้เป็นปัจจุบันตามที่รับค่ามา จากสีที่เรากด
+    setSelectedColor(color);
+    // set colorData ให้เป็นปัจจุบันตามที่รับค่ามา จากสีที่เรากด
+    const colorData = productsData[color];
+    // พอสีเป็นปัจจุบันแล้ว ก็มา filter หา sizes ในสีนั้นๆที่มีของ (remains > 0) เก็บทุก size ที่ของไว้ใน availableSizes[]
+    const availableSizes = Object.keys(colorData.sizes).filter(
+      (size) => colorData.sizes[size].remains > 0
+    );
+
+    // จากข้างบนถ้าไม่มีของเลยก็จะเข้าเงื่อนไข
+    if (availableSizes.length === 0) {
+      // If no sizes are available for the selected color, reset the selected size
+      // ซึ่งให้ set เป็น null ไปเลยเพื่อเคสนี่โยงไปถึง qty section เพราะพอ null แล้ว qty ก็ disable เพราะไม่มีอะไรให้ render
+      setSelectedSize(null);
+      // set disable เพื่อไปทำให้การแสดงผลใน size มันเทาตามเงื่อนไขของเรา
+      setSizeDisabled(true);
+
+      // จากข้างบนถ้ามีของ
+    } else {
+      // set false เพื่อจะได้แสดง choice ได้ตามปกติ
+      setSizeDisabled(false);
+      // ถ้าไซต์ที่เลือกจากสีก่อน ไม่ได้มีอยู่ในสีใหม่ ให้ set default เป็นตัวแรกของสีใหม่
+      if (!availableSizes.includes(selectedSize)) {
+        // If the selected size is not available for the new color
+        const defaultSize = availableSizes[0]; // Get the first available size of the new color
+        setSelectedSize(defaultSize);
+      }
+    }
+  };
+
+  const handleSizeChange = (size) => {
+    setSelectedSize(size);
+  };
+
+  useEffect(() => {
+    if (selectedColor && selectedSize) {
+      const currentSkuCode =
+        productsData?.[selectedColor]?.sizes?.[selectedSize]?.skuCode;
+      setSelectedSkuCode(currentSkuCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedColor, selectedSize]);
+
+  console.log(skuCode);
   console.log(colors);
   console.log(sizes);
   console.log(remains);
   console.log(colorCode);
-  console.log(stock);
+  console.log(productsData);
+  console.log(selectedColor);
+  console.log(selectedSkuCode);
+  console.log(selectedQty);
 
   // Button function
   const nextButton = () => {
     const nextIndex = (currentImageIndex + 1) % products.imageUrls.length;
     setCurrentImageIndex(nextIndex);
   };
-
+  // Button function
   const previousButton = () => {
     const prevIndex =
       (currentImageIndex - 1 + products.imageUrls.length) %
@@ -92,13 +331,31 @@ function ProductDetail() {
     setCurrentImageIndex(prevIndex);
   };
 
+  const totalPriceNormal = ((selectedQty, products) => {
+    const qty = parseInt(selectedQty);
+    return qty * products.price;
+  })(selectedQty, products);
+
+  const totalPriceDiscount = ((selectedQty, products) => {
+    const qty = parseInt(selectedQty);
+    return qty * products.promotionalPrice;
+  })(selectedQty, products);
+
   return (
     <main className="mx-auto lg:max-w-[1600px] lg:min-h-screen">
       {/* Div that wrap the image section and detail section */}
       <div className="mb-20 lg:flex lg:gap-10 lg:mb-[145px]">
         {/* Image section */}
         {isLoading ? (
-          <div>Loading product details...</div>
+          <div className="flex-col m-4 mt-10 lg:mt-[111px] ">
+            <div className="skeleton w-full h-[343px] lg:w-[780px] lg:h-[780px]"></div>
+            <div className="flex gap-4 mt-[17px] lg:mt-[31px] lg:gap-[30px] ">
+              <div className="skeleton w-20 h-20 lg:w-[172px] lg:h-[172px]"></div>
+              <div className="skeleton w-20 h-20 lg:w-[172px] lg:h-[172px]"></div>
+              <div className="skeleton w-20 h-20 lg:w-[172px] lg:h-[172px]"></div>
+              <div className="skeleton w-20 h-20 lg:w-[172px] lg:h-[172px]"></div>
+            </div>
+          </div>
         ) : (
           <div className=" m-4 my-10 lg:basis-1/2 lg:m-0 lg:mt-28">
             {/* Main preview image */}
@@ -274,48 +531,409 @@ function ProductDetail() {
         )}
         {/* Detail Section */}
         <div className="mx-4 lg:basis-1/2 lg:mx-0 lg:m-0 lg:mt-28 ">
-          <p className="text-lg font-semibold mb-1 lg:text-2lg lg:font-bold lg:mb-4">
-            id : {products.id}
-          </p>
-          <h4 className="text-[40px] font-bold mb-1 lg:text-5lg lg:mb-4">
-            {products.name}
-          </h4>
-          <p className="text-lg font-semibold text-secondary-700 mb-7 lg:text-lg lg:mb-6 lg:text-secondary-s">
-            {products.description}
-          </p>
-          {stock !== 0 && !hasDiscount() && (
-            <p className="text-[32px] font-bold mb-7 lg:text-[40px] lg:mb-6">
-              THB {products.price}.00
-            </p>
-          )}
-          {stock == 0 && (
-            <div>
-              <p className="text-[32px] font-bold mb-2 lg:text-[40px] ">
-                THB {products.price}.00
-              </p>
-              <p className="text-danger text-lg font-semibold mb-[24px] lg:text-2xl lg:font-bold">
-                Out of stock
-              </p>
-            </div>
-          )}
-          {hasDiscount() && (
-            <div>
-              <div className=" inline-block bg-danger mb-2">
-                <p className=" inline-block text-[32px] text-white font-bold my-2 mx-[10px] lg:text-[40px]">
-                  THB {products.promotionalPrice}.00
-                </p>
+          {isLoading ? (
+            <div className="flex flex-col gap-3 mt-8">
+              <div className="skeleton w-32 h-5 my-1"></div>
+              <div className="skeleton w-80 h-10 mt-5 lg:w-[460px]"></div>
+              <div className="skeleton w-40 h-10 mb-5 lg:hidden"></div>
+              <div className="flex flex-col gap-3 my-3 lg:my-6">
+                <div className="skeleton w-80 h-5 lg:w-[780px]"></div>
+                <div className="skeleton w-72 h-5 lg:w-[500px]"></div>
+                <div className="skeleton w-80 h-5 lg:hidden"></div>
+                <div className="skeleton w-72 h-5 lg:hidden"></div>
               </div>
-              <p className="text-lg font-semibold mb-[24px]">
-                From{" "}
-                <span className="line-through ">THB {products.price}.00</span>
+              <div className="hidden skeleton w-80 h-10 lg:block lg:w-[230px]"></div>
+              <div className="hidden lg:block">
+                <div className="flex flex-col my-10">
+                  <div className="skeleton w-12 h-3 mb-4"></div>
+                  <div className="flex gap-14 ml-5">
+                    <div className="skeleton w-[54px] h-[54px]"></div>
+                    <div className="skeleton w-[54px] h-[54px]"></div>
+                    <div className="skeleton w-[54px] h-[54px]"></div>
+                  </div>
+                </div>
+                <div className="flex flex-col my-10">
+                  <div className="skeleton w-12 h-3 mb-4"></div>
+                  <div className="flex gap-6 ml-5">
+                    <div className="skeleton w-[150px] h-[54px]"></div>
+                    <div className="skeleton w-[150px] h-[54px]"></div>
+                    <div className="skeleton w-[150px] h-[54px]"></div>
+                    <div className="skeleton w-[150px] h-[54px]"></div>
+                  </div>
+                </div>
+                <div className="flex flex-col mt-10 mb-4">
+                  <div className="skeleton w-12 h-3 mb-4"></div>
+                  <div className="flex gap-6 ml-5">
+                    <div className="skeleton w-[150px] h-[54px]"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-lg font-semibold mb-1 lg:text-2lg lg:font-bold lg:mb-4">
+                id : {products.skuCode}
               </p>
+              <h4 className="text-[40px] font-bold mb-1 lg:text-5lg lg:mb-4">
+                {products.name}
+              </h4>
+              <p className="text-lg font-semibold text-secondary-700 mb-7 lg:text-lg lg:mb-6 lg:text-secondary-s">
+                {products.description}
+              </p>
+              {stock !== 0 && !hasDiscount() && (
+                <p className="text-[32px] font-bold mb-7 lg:text-[40px] lg:mb-6">
+                  THB {products.price}.00
+                </p>
+              )}
+              {stock == 0 && (
+                <div>
+                  <p className="text-[32px] font-bold mb-2 lg:text-[40px] ">
+                    THB {products.price}.00
+                  </p>
+                  <p className="text-danger text-lg font-semibold mb-[24px] lg:text-2xl lg:font-bold">
+                    Out of stock
+                  </p>
+                </div>
+              )}
+              {hasDiscount() && (
+                <div>
+                  <div className=" inline-block bg-danger mb-2">
+                    <p className=" inline-block text-[32px] text-white font-bold my-2 mx-[10px] lg:text-[40px]">
+                      THB {products.promotionalPrice}.00
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold mb-[24px]">
+                    From{" "}
+                    <span className="line-through ">
+                      THB {products.price}.00
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
+          {/* color section */}
+          {isLoading ? "" : <p className="text-secondary-700 mb-2">Color</p>}
 
-          <button className="bg-black w-full h-[54px] text-base text-white">
+          <div className="flex justify-between mx-auto mb-6 lg:justify-normal lg:ml-4 lg:gap-[25px]">
+            {/* map สี จาก key สีใน object โดยสินค้าเข้าถึง key สีผ่าน Object.keys(productsData) */}
+            {Object.keys(productsData).map((color) => {
+              {
+                /* ได้สีมาไปใส่ productsData[color] เพื่อเก็บค่าทุกอย่างที่อยู่ภายใต้ key ของสีนั้นๆลงใน colorData*/
+              }
+              const colorData = productsData[color];
+              {
+                /* เข้าไปหา values ของแต่ละ key(sizes ซึ่งคือ (x,m,l,xl)) ซึ่งจะได้ values ที่อยู่ภายในแต่ละไซส์
+               มาเป็น {remains: 0, skuCode: 'C0900611'} จากนั้น .some แล้วจะเข้าไปอีกทีผ่าน
+                size ที่เอาไป .remains เพื่อเข้าถึงค่าของที่เหลือ*/
+              }
+              const hasStock = Object.values(colorData.sizes).some(
+                (size) => size.remains > 0
+              );
+              {
+                /* .some ถ้าเจอของอย่างเดียวที่ตรงเงื่อนไง จะคืน ค่า true,false ออกไป */
+              }
+              return (
+                <div
+                  className={`flex flex-col items-center w-[85px] ${
+                    // isColorDisabled ก็คือ ไม่มีของ out of stock
+                    isColorDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  // เช็คสองเงื่อนไขเพราะว่า ถ้าเงื่อนไขแรกมันเป็นจริงซึ่งก็คือสีไม่ได้ถูก Disabled ถึงค่อย call handleColorChange(color) ได้
+                  // ถ้าไม่เช็คว่ามัน Disabled กดกี่ที call handleColorChange(color) ตลอดซึ่งไม่ดีต่อ performance
+                  onClick={() => !isColorDisabled && handleColorChange(color)}
+                  key={color}
+                >
+                  <svg
+                    width="54"
+                    height="54"
+                    viewBox="0 0 054"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={` flex border ${
+                      // สีที่ออกมาจาก loop ตรงกับ selectedColor ซึ่งคือ default ไหม และ hasStock ก็คือมีของ
+                      (selectedColor === color && hasStock) ||
+                      // สีที่ออกมาจาก loop ตรงกับ selectedColor ซึ่งคือ default ไหม และ ไม่ ColorDisabled ซึ่งก็คือของไม่หมด
+                      (selectedColor === color && !isColorDisabled)
+                        ? "border-primary-700"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: colorData.colorCode }}
+                  >
+                    <rect
+                      x="0.5"
+                      y="0.5"
+                      width="53"
+                      height="53"
+                      stroke="#E1E1E1"
+                    />
+                    <line x1="7.5" y1="1" x2="7.5" y2="100" stroke="white " />
+                    <line x1="17.5" y1="1" x2="17.5" y2="53" stroke="white" />
+                    <line x1="27.5" y1="1" x2="27.5" y2="53" stroke="white" />
+                    <line x1="37.5" y1="1" x2="37.5" y2="53" stroke="white" />
+                    <line x1="47.5" y1="1" x2="47.5" y2="53" stroke="white" />
+                    <line x1="53" y1="7.5" x2="1" y2="7.5" stroke="white" />
+                    <line x1="53" y1="17.5" x2="1" y2="17.5" stroke="white" />
+                    <line x1="53" y1="27.5" x2="1" y2="27.5" stroke="white" />
+                    <line x1="53" y1="37.5" x2="1" y2="37.5" stroke="white" />
+                    <line x1="53" y1="47.5" x2="1" y2="47.5" stroke="white" />
+                  </svg>
+
+                  <div className="flex justify-center">
+                    <p className="text-md text-gray-700 mt-2">{color}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {selectedColor && productsData[selectedColor] && (
+            <div>
+              {/* Size options */}
+              {selectedSize !== "NULL" && (
+                <div className="mx-auto">
+                  <p className="text-secondary-700 mb-2">Size</p>
+                  <div className="flex flex-wrap mb-6 gap-2 lg:gap-2 mx-8">
+                    {/* render ใหม่ตามสีที่ถูก selected จาก handleColorChange(color) หรือ default color (ครั้งแรก)*/}
+                    {/*(productsData[selectedColor] syntax นี้ทำให้ได้ของทั้งหมดในภายใต้ [] หรือ key นั้นๆ )
+                    "colorCode": "#0000Fl",
+                    "sizes": {
+                    "S": { remains: 2 },
+                    "M": { remains: 1 },
+                    "L": { remains: 3 }
+                    .sizes เพื่อเข้าถึง key sizes ทั้งหมด แล้ววนด้วย .map */}
+                    {Object.keys(productsData[selectedColor].sizes).map(
+                      (size) => {
+                        //เข้าไปถึงข้อมูลในแต่ละ key ของ sizes { remains: 1 }
+                        const sizeData =
+                          productsData[selectedColor].sizes[size];
+                        //size ไหนไม่มีของ (remains = 0) ก็จะคืนค่า true false ใส่ isDisabled
+                        const isDisabled = sizeData.remains === 0;
+                        return (
+                          <div
+                            className={` ${
+                              isDisabled
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            }`}
+                            // เช็คสองเงื่อนไขเพราะว่า ถ้าเงื่อนไขแรกมันเป็นจริงซึ่งก็คือ size ไม่ได้ถูก Disabled ถึงค่อย call handleSizeChange(size) ได้
+                            // ถ้าไม่เช็คว่ามัน Disabled กดกี่ที call handleSizeChange(size) ตลอดซึ่งไม่ดีต่อ performance
+                            onClick={() =>
+                              !isDisabled && handleSizeChange(size)
+                            }
+                            key={size}
+                          >
+                            <div
+                              // ถ้าสีที่เลือก (defalut size) อยู่ไม่ตรงกับ size ที่ถูก render ก็ไม่มี border
+                              // จนกว่าจะ render เจอของที่กันถึงจะมี border
+                              className={`flex w-[62px] lg:w-[150px] h-[54px] items-center justify-center border ${
+                                selectedSize === size
+                                  ? "border-primary-700"
+                                  : ""
+                              } ${
+                                isDisabled
+                                  ? "bg-secondary-100 text-secondary-500 "
+                                  : ""
+                              }`}
+                            >
+                              <p className="">{size}</p>
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                </div>
+              )}
+              {/* Quantity section */}
+              <div>
+                <div className="flex">
+                  <p className="text-secondary-700 mb-2">Qty.</p>
+                  <div
+                    className="tooltip tooltip-base-content"
+                    data-tip="Limit of 10 per order, please contact our customer service for larger orders."
+                  >
+                    <button className="ml-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        className="text-secondary-700 mt-[2px]"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" x2="12" y1="8" y2="12" />
+                        <line x1="12" x2="12.01" y1="16" y2="16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <select
+                    className={`border-[1px] h-[54px] w-full px-[10px] mb-6 lg:ml-8 lg:w-[156px]${
+                      // ? คือ Optional chaining (ES11) ทำการเช็ค object ที่เราต้องการอ่าน
+                      // ว่ามีค่าหรือไม่หากไม่มีก็จะ fallback undefined ให้เราแทนที่จะ throw error
+                      Object.values(
+                        // ถ้าไม่มีสีถูก select อยู่ (ในกรณีนี้อาจเป็นของหมดทุกสี สีจึงไม่ถูก select)
+                        // จะให้ .every ใช้กับ {} แทนเพราะเรามี || รองรับไว้เลยเลื่อมาเป็น {}
+                        productsData[selectedColor]?.sizes || {}
+                        //every เข้าไปหา remain ของ size ทุก size
+                        // (Every คือเมธอดสำหรับทดสอบข้อมูลทุกตัว โดยเมื่อผ่านเงื่อนไขที่กำหนด ทุกค่า จะคืนค่า true หรือ false)
+                      ).every((sizeData) => sizeData.remains === 0)
+                        ? "h-[54px] text-secondary-500 bg-secondary-100 w-full px-[10px] mb-6 lg:w-[156px] lg:ml-8"
+                        : ""
+                    }`}
+                    // เป็นเงื่อนไขเหมือนการแสดงผลเลย ถ้าไม่มีข้อมูลในทุก size (select ตัวนี้ก็จะ disable กดไม่ได้ไป (ได้ค่า ture จาก every))
+                    disabled={Object.values(
+                      productsData[selectedColor]?.sizes || {}
+                    ).every((sizeData) => sizeData.remains === 0)}
+                    // value เป็น string เปล่าเพราะ ถ้ามีสีหรือ size ถูกเลือกและ render ใหม่ qty จะได้ล้างค่าตามไปด้วย
+                    value={selectedQty} // Ensure that the select box value is reset when color or size changes
+                    onChange={(event) => setSelectedQty(event.target.value)} // Prevent selecting a value when disabled
+                  >
+                    {selectedColor &&
+                      selectedSize &&
+                      // Array.from พร้อมส่ง Array-like Object เข้าไปเพื่อสร้างอาร์เรย์ใหม่ได้ ในที่นี้คือ length ที่มี
+                      // ความยาวตาม condition ตามที่เรากำหนดที่ดึงมาจากข้อมูล
+                      Array.from(
+                        // ความยาวมีได้ 3 case
+                        // productsData[selectedColor].sizes[selectedSize]?.remains
+                        // ของมาใน json format ปกติ
+                        // productsData[selectedColor]?.remains
+                        // ของไม่มี size เข้าถึง remains ได้เลยตามโครงสร้าง reform (แว่น,กระเป๋า)
+                        // 0
+                        // ของ out of stock
+                        {
+                          length:
+                            productsData?.[selectedColor]?.sizes?.[selectedSize]
+                              ?.remains > 10
+                              ? 10
+                              : productsData?.[selectedColor]?.sizes?.[
+                                  selectedSize
+                                ]?.remains,
+                        },
+                        // สมมุติได้ remain ของนี้มา 20 ตัว = index[0,1,2,3...,19]
+                        //  = ก็จะ map option จนครบจำนวนข้อมูลซึ่งมี 20 ตัว
+                        (_, index) => (
+                          <option key={index + 1} value={index + 1}>
+                            {index + 1}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          <button
+            className={`bg-black w-full h-[54px] text-white ${
+              // ? คือ Optional chaining (ES11) ทำการเช็ค object ที่เราต้องการอ่าน
+              // ว่ามีค่าหรือไม่หากไม่มีก็จะ fallback undefined ให้เราแทนที่จะ throw error
+              Object.values(
+                // ถ้าไม่มีสีถูก select อยู่ (ในกรณีนี้อาจเป็นของหมดทุกสี สีจึงไม่ถูก select)
+                // จะให้ .every ใช้กับ {} แทนเพราะเรามี || รองรับไว้เลยเลื่อมาเป็น {}
+                productsData[selectedColor]?.sizes || {}
+                //every เข้าไปหา remain ของ size ทุก size
+                // (Every คือเมธอดสำหรับทดสอบข้อมูลทุกตัว โดยเมื่อผ่านเงื่อนไขที่กำหนด ทุกค่า จะคืนค่า true หรือ false)
+              ).every((sizeData) => sizeData.remains === 0)
+                ? "text-secondary-500 bg-secondary-300"
+                : ""
+            }`}
+            disabled={Object.values(
+              productsData[selectedColor]?.sizes || {}
+            ).every((sizeData) => sizeData.remains === 0)}
+            onClick={() =>
+              sentSelecedProductToCart() &&
+              document.getElementById("my_modal_5").showModal()
+            }
+          >
+            {/* document.getElementById("my_modal_5").showModal() */}
             Add to cart
           </button>
+          {/* Modal */}
+          <dialog id="my_modal_5" className="modal">
+            <div className="modal-box lg:max-w-[900px]">
+              <div className="flex justify-between items-center mb-6 lg:mb-12">
+                <h3 className="font-bold text-lg lg:text-2xl lg:font-bold">
+                  Items added to you cart
+                </h3>
+                <form method="dialog">
+                  <button className="">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 1L17 17"
+                        stroke="#222222"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M17 1L1 17"
+                        stroke="#222222"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </form>
+              </div>
+              <div>
+                <div className="lg:flex lg:justify-between lg:mb-6">
+                  <div className="flex flex-col justify-center lg:flex-row">
+                    <div className="flex justify-center">
+                      <img
+                        className="w-full object-cover aspect-square max-w-[160px] mb-4"
+                        src={products.imageUrls && products.imageUrls[0]}
+                      ></img>
+                    </div>
+                    <div className="lg:flex lg:items-center lg:justify-center lg:ml-10">
+                      <div>
+                        {" "}
+                        <p className="text-lg font-semibold mb-[10px] lg:text-2xl lg:font-bold">
+                          {products.name}
+                        </p>
+                        <p className="mb-1 text-secondary-700 lg:text-lg lg:font-semibold lg:mb-0">
+                          QTY : {selectedQty}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lg:flex lg:items-center lg:justify-center">
+                    <div className="text-lg font-semibold mb-6 text-end lg:text-2xl lg:font-bold lg:mb-10">
+                      THB {hasDiscount ? totalPriceDiscount : totalPriceNormal}
+                      .00
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4 lg:flex-row">
+                  <button className="border bg-secondary-s text-white py-[14px] lg:basis-1/2">
+                    View cart
+                  </button>
+                  <div className="lg:basis-1/2">
+                    <form method="dialog">
+                      {" "}
+                      <button className="border text-secondary-s p-[14px] w-full">
+                        Continue shopping
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-action"></div>
+            </div>
+          </dialog>
         </div>
       </div>
       {/* Another product section */}
