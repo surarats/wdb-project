@@ -6,11 +6,9 @@ import ProductRecommend from "./ProductRecommend";
 import axios from "axios";
 
 function MyCart() {
-  const [isEmptyCart, setIsEmtpyCart] = useState(false);
-  const [productDetail, setProductDetail] = useState([]);
+  const [cartList, setCartList] = useState(undefined);
 
-  const [cartList, setCartList] = useState({});
-
+  //get cart by cart id
   const fetchCart = async () => {
     const response = await axios.get(
       "https://api.storefront.wdb.skooldio.dev/carts/3iIZ8sB1pCYzCTxVRaaw"
@@ -18,23 +16,9 @@ function MyCart() {
     setCartList(response.data);
   };
 
-  // Fetch product detail from product permalink
-  // const fetchProductDetail = () => {
-  //   cartList.items.forEach(async (i) => {
-  //     let response = await axios.get(
-  //       `https://api.storefront.wdb.skooldio.dev/products/${i.productPermalink}`
-  //     );
-  //     setProductDetail([...prev, response.data]);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   fetchCart();
-  //   fetchProductDetail();
-  // }, []);
-
-  // console.log(cartList);
-  // console.log(productDetail);
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
   return (
     <>
@@ -45,13 +29,17 @@ function MyCart() {
         <div className="flex flex-col p-4 bg-white h-fit lg:w-3/5">
           <h2 className="font-bold text-2xl text-[#222] mb-6">Items</h2>
           <div className="flex flex-col gap-6 items-center text-[#222]">
-            {isEmptyCart ? <CartEmpty /> : <CartList />}
+            {!cartList ? (
+              <CartEmpty />
+            ) : (
+              <CartList cartList={cartList} fetchCart={fetchCart} />
+            )}
           </div>
         </div>
-        <CartSummary isEmptyCart={isEmptyCart} />
+        <CartSummary cartList={cartList} />
       </div>
 
-      {isEmptyCart && (
+      {!cartList && (
         <div className="flex flex-col">
           <h2 className="text-[32px] font-bold leading-[48px] mb-10">
             People also like these

@@ -4,16 +4,16 @@ import ProductRecommend from "../components/ProductRecommend";
 function Home() {
   return (
     <div className="bg-[#fafafa] lg:min-h-screen">
+      {/* Banner */}
+      <div>
+        <img
+          className="h-[166px] size-full object-cover bg-cover lg:h-[420px] lg:mb-[97px]"
+          src="/images/banner.jpeg"
+        ></img>
+      </div>
       <div className="mx-4 lg:mx-auto lg:max-w-[1600px] pb-10">
-        {/* Banner */}
-        <div>
-          <img
-            className="h-[166px] size-full object-cover lg:h-[420px]"
-            src="/images/banner.jpeg"
-          ></img>
-        </div>
         {/* 2024 Collection */}
-        <div className="lg:h-[500px] lg:flex lg:flex-row lg:pl-[167px] lg:pr-[167px] lg:justify-evenly ">
+        <div className=" mb-[80px] lg:h-[500px] lg:flex lg:flex-row lg:justify-evenly ">
           <div className="my-[32px] ml-[18px] mr-[17px] lg:w-[363px] lg:h-[458px] ">
             <div>
               <div className="text-[64px] font-bold	leading-[92px]">2024</div>
@@ -36,7 +36,7 @@ function Home() {
           </div>
           {/* Collection Photo1 */}
           <div
-            className="my-[32px] ml-[18px] mr-[17px] h-[500px] bg-gradient-to-r from-transparent to-black bg-cover flex flex-col items-center justify-end gap-[16px] px-[16px] lg:w-[575px]"
+            className=" ml-[18px] mr-[17px] mb-[20px] h-[500px] bg-gradient-to-r from-transparent to-black bg-cover flex flex-col items-center justify-end gap-[16px] px-[16px] lg:w-[575px]"
             style={{
               backgroundImage:
                 "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1)), url('/images/cozy-breeze.jpeg')",
@@ -58,7 +58,7 @@ function Home() {
           </div>
           {/* Collection Photo2 */}
           <div
-            className="my-[32px] ml-[18px] mr-[17px] h-[500px] bg-gradient-to-r from-transparent to-black bg-cover flex flex-col items-center justify-end gap-[16px] px-[16px] lg:w-[575px]"
+            className=" ml-[18px] mr-[17px] h-[500px] bg-gradient-to-r from-transparent to-black bg-cover flex flex-col items-center justify-end gap-[16px] px-[16px] lg:w-[575px]"
             style={{
               backgroundImage:
                 "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1)), url('/images/flexi-move.jpeg')",
@@ -78,12 +78,12 @@ function Home() {
               View More
             </div>
           </div>
-          <div className="flex flex-col">
-            <h2 className="text-[32px] font-bold leading-[48px] mb-10 text-center">
-              Featured Product
-            </h2>
-            <ProductRecommend />
-          </div>
+        </div>
+        <div className="flex flex-col">
+          <h2 className="text-[32px] font-bold leading-[48px] mb-10 text-center">
+            Featured Product
+          </h2>
+          <ProductRecommend />
         </div>
       </div>
     </div>
