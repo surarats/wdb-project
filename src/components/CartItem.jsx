@@ -69,6 +69,7 @@ function CartItem({ item, cartId, fetchCart }) {
     setFQty(qty);
   };
 
+  //remove item
   const handleRemoveItem = async (itemId, fetchCart) => {
     let result = confirm("Do you want to remove this item?");
     if (result) {
@@ -79,13 +80,8 @@ function CartItem({ item, cartId, fetchCart }) {
     }
   };
 
+  //update item
   const handleUpdateItem = async (itemId, cartId, fetchCart) => {
-    console.log(itemId);
-    console.log(cartId);
-    console.log(fColor);
-    console.log(fSize);
-    console.log(fQty);
-
     await axios.patch(
       `https://api.storefront.wdb.skooldio.dev/carts/${cartId}/items/${itemId}`,
       { quantity: fQty, skuCode: fSkuCode }
