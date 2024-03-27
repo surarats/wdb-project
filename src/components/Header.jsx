@@ -1,19 +1,43 @@
-import { useState } from "react";
+import react, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import axios from "axios";
 
 function Header() {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [isMenuToggle, setIsMenuToggle] = useState(false);
+
+  const handleMenuToggle = () => {
+    document.querySelector("body").style.overflow = isMenuToggle
+      ? "scroll"
+      : "hidden";
+    setIsMenuToggle(!isMenuToggle);
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.storefront.wdb.skooldio.dev/categories"
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
-    // Navbar Container
-    <header className="bg-[#222]">
-      <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center">
-        {/* Navber Left*/}
+    <header className="bg-[#222] fixed w-full top-0 left-0 z-50 ">
+      <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center lg:pl-0">
         <div className="flex flex-col gap-10 lg:flex-row w-full">
           <div className="flex items-center gap-2 ">
             {/* Menu Button */}
             <svg
               className="lg:hidden cursor-pointer"
-              onClick={() => setIsSmallScreen(!isSmallScreen)}
+              onClick={handleMenuToggle}
               width="40"
               height="40"
               viewBox="0 0 40 40"
@@ -188,18 +212,21 @@ function Header() {
             </Link>
           </div>
           {/* Menu List */}
-          <ul
-            className={`text-white transition-[flex] duration-700  lg:flex lg:flex-row lg:justify-start
-          ${isSmallScreen ? "w-full flex flex-col" : "hidden"}`}
-          >
-            <li className="py-3 pr-6 pl-0">Men</li>
-            <li className="py-3 pr-6 pl-0">Women</li>
-            <li className="py-3 pr-6 pl-0">Kids</li>
-            <li className="py-3 pr-6 pl-0">Shoes</li>
-            <li className="py-3 pr-6 pl-0">Accessories</li>
+          <ul className="text-white transition-[flex] duration-700 hidden  lg:flex lg:flex-row lg:justify-start">
+            {categories.map(
+              (category) =>
+                !category.parentId && (
+                  <Link
+                    to={`/products/categories/${category.permalink}`}
+                    key={`${new Date().getTime}${category.id}`}
+                  >
+                    <li className="py-3 pr-6 pl-0">{category.name}</li>
+                  </Link>
+                )
+            )}
           </ul>
         </div>
-        {/* Navbar Right */}
+
         <Link to="/cart">
           <div className="relative">
             {/* Cart Button */}
@@ -223,6 +250,12 @@ function Header() {
           </div>
         </Link>
       </nav>
+
+      <Sidebar
+        isMenuToggle={isMenuToggle}
+        handleMenuToggle={handleMenuToggle}
+        categories={categories}
+      />
     </header>
   );
 }
