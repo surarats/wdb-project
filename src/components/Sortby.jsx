@@ -62,7 +62,7 @@ function Sortby({ manage, category }) {
     <>
       {/* Mobile Sort */}
       <div>
-        <div
+        <button
           className="flex items-center mb-[22px] text-[18px] leading-6 font-semibold cursor-pointer lg:hidden"
           onClick={handleSortToggle}
         >
@@ -101,7 +101,7 @@ function Sortby({ manage, category }) {
             <circle cx="17" cy="24" r="3" stroke="#222222" strokeWidth="2" />
             <circle cx="25" cy="16" r="3" stroke="#222222" strokeWidth="2" />
           </svg>
-        </div>
+        </button>
 
         {isSortToggle && (
           <div

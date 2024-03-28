@@ -852,7 +852,7 @@ function ProductDetail() {
             </div>
           )}
           <button
-            className={`bg-black w-full h-[54px] text-white ${
+            className={`bg-black w-full h-[54px] text-white hover:bg-[#DEF81C] hover:text-[#222] !important ${
               // ? คือ Optional chaining (ES11) ทำการเช็ค object ที่เราต้องการอ่าน
               // ว่ามีค่าหรือไม่หากไม่มีก็จะ fallback undefined ให้เราแทนที่จะ throw error
               Object.values(
@@ -937,12 +937,14 @@ function ProductDetail() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 lg:flex-row">
-                  <button className="border bg-secondary-s text-white py-[14px] lg:basis-1/2">
-                    <Link to="/cart">View cart</Link>
-                  </button>
+                  <Link
+                    to="/cart"
+                    className="border bg-secondary-s text-white py-[14px] lg:basis-1/2 text-center hover:bg-[#DEF81C] hover:text-[#222] !important"
+                  >
+                    View cart
+                  </Link>
                   <div className="lg:basis-1/2">
                     <form method="dialog">
-                      {" "}
                       <button className="border text-secondary-s p-[14px] w-full">
                         Continue shopping
                       </button>

@@ -48,7 +48,6 @@ function CartItem({ item, cartId, product, fetchCart }) {
       await axios.delete(
         `https://api.storefront.wdb.skooldio.dev/carts/${cartId}/items/${itemId}`
       );
-
       await fetchCart();
     }
   };
