@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartItemSummary from "./CartItemSummary";
+import Skeleton from "@mui/material/Skeleton";
 
-function CartSummary({ cartList, products }) {
+function CartSummary({ cartList, products, isLoading }) {
   const [totalQty, setTotalQty] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
 
@@ -37,7 +38,7 @@ function CartSummary({ cartList, products }) {
 
   return (
     <div className="bg-white flex flex-col gap-10 p-6 h-fit lg:w-2/5">
-      {!cartList ? (
+      {!cartList || !cartList.items.length > 0 ? (
         <div className="flex flex-col gap-6 ">
           <div className="flex justify-between items-center">
             <h2 className="font-bold text-2xl text-[#222]">Summary</h2>
@@ -87,28 +88,47 @@ function CartSummary({ cartList, products }) {
               item={item}
               cartList={cartList}
               products={products}
+              isLoading={isLoading}
             />
           ))}
 
           <div className="border border-[#e1e1e1]"></div>
 
           <div className="flex flex-col gap-4 ">
-            <div className="flex justify-between">
-              <h3>Subtotal</h3>
-              <p>{subtotal.toLocaleString("en-US", options)}</p>
-            </div>
-            <div className="flex justify-between">
-              <h3>Shipping fee</h3>
-              <p>Free</p>
-            </div>
+            {isLoading ? (
+              <>
+                <div className="">
+                  <Skeleton animation="wave" height={10} />
+                </div>
+                <div className="">
+                  <Skeleton animation="wave" height={10} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between">
+                  <h3>Subtotal</h3>
+                  <p>{subtotal.toLocaleString("en-US", options)}</p>
+                </div>
+                <div className="flex justify-between">
+                  <h3>Shipping fee</h3>
+                  <p>Free</p>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex-1 border border-[#e1e1e1]"></div>
-
-          <div className="flex justify-between font-semibold text-[18px] leading-6 ">
-            <h3>Total</h3>
-            <p>{subtotal.toLocaleString("en-US", options)}</p>
-          </div>
+          {isLoading ? (
+            <div className="">
+              <Skeleton animation="wave" height={10} />
+            </div>
+          ) : (
+            <div className="flex justify-between font-semibold text-[18px] leading-6 ">
+              <h3>Total</h3>
+              <p>{subtotal.toLocaleString("en-US", options)}</p>
+            </div>
+          )}
         </div>
       )}
 
