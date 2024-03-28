@@ -29,6 +29,19 @@ function Header() {
     fetchCategories();
   }, []);
 
+  const [haveItemInCart, setHaveItemInCart] = useState(
+    localStorage.getItem("Cart") !== null
+  );
+
+  useEffect(() => {
+    const checkLocalStorage = () => {
+      const newItemInCart = localStorage.getItem("Cart") !== null;
+      setHaveItemInCart(newItemInCart);
+    };
+    const intervalId = setInterval(checkLocalStorage, 1000);
+    return () => clearInterval(intervalId);
+  }, [categories]);
+
   return (
     <header className="bg-[#222] fixed w-full top-0 left-0 z-50 ">
       <nav className="flex justify-center py-2 pr-2 pl-4 shadow-[0_4px_24px_0_rgba(17,17,26,0.03)] lg:max-w-[1600px] lg:mx-auto lg:items-center lg:pl-0">
@@ -246,7 +259,11 @@ function Header() {
                 strokeLinejoin="round"
               />
             </svg>
-            <div className="bg-[#ff000d] w-[7px] h-[7px] rounded-full absolute top-[11px] left-[26px] z-10"></div>
+            {haveItemInCart ? (
+              <div className="bg-[#ff000d] w-[7px] h-[7px] rounded-full absolute top-[11px] left-[26px] z-10"></div>
+            ) : (
+              ""
+            )}
           </div>
         </Link>
       </nav>

@@ -8,10 +8,11 @@ import axios from "axios";
 function MyCart() {
   const [cartList, setCartList] = useState(undefined);
 
+  const cartID = localStorage.getItem("Cart");
   //get cart by cart id
   const fetchCart = async () => {
     const response = await axios.get(
-      "https://api.storefront.wdb.skooldio.dev/carts/3iIZ8sB1pCYzCTxVRaaw"
+      `https://api.storefront.wdb.skooldio.dev/carts/${cartID}`
     );
     setCartList(response.data);
   };

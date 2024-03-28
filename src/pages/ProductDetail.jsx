@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import Rating from "@mui/material/Rating";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import { styled } from "@mui/material/styles";
+import ProductRecommend from "../components/ProductRecommend";
 
+const StyledRating = styled(Rating)({
+  "& .MuiRating-iconFilled": {
+    color: "#DEF81C",
+  },
+});
 // shoes-chelsea-boots ของลด มี size มากกว่า 5 เป็นเลข
 // shirts-relaxed-tailored-jacket
 // shoes-fashionable-high-top-canvas-sneakers ของลด มี size มากกว่า 5 เป็นเลข
@@ -9,7 +19,7 @@ import axios from "axios";
 // Abstratct Printed Scarf
 // shirts-cotton-short-sleeve-dress
 
-const permalink = "shirts-cotton-short-sleeve-dress";
+// const permalink = "shirts-cotton-short-sleeve-dress";
 
 function ProductDetail() {
   const [products, setProducts] = useState([]);
@@ -33,6 +43,8 @@ function ProductDetail() {
   // `http://localhost:3000/`
 
   // fetchdata
+
+  let { permalink } = useParams();
   useEffect(() => {
     setIsLoading(true);
     const fetchData = async () => {
@@ -79,34 +91,28 @@ function ProductDetail() {
     fetchData();
   }, []);
 
+  const [cartList, setCartList] = useState({});
+
+  useEffect(() => {
+    const cartID = localStorage.getItem("Cart");
+    //get cart by cart id
+    const fetchCart = async () => {
+      const response = await axios.get(
+        `https://api.storefront.wdb.skooldio.dev/carts/${cartID}`
+      );
+      setCartList(response.data);
+    };
+    if (cartID) {
+      console.log(cartID);
+      fetchCart();
+    }
+    console.log(cartID);
+  }, []);
+
   const sentSelecedProductToCart = async () => {
-    const myCart = [
-      {
-        id: "vWHWEhKkek4j4mYs0rJ2",
-        skuCode: "C0900610",
-        quantity: "1",
-        productPermalink: "shirts-boxy-tailored-jacket",
-      },
-      {
-        id: "6Vui18TapiaaJ2XQpOz6",
-        skuCode: "C0900609",
-        quantity: "11111",
-        productPermalink: "shirts-boxy-tailored-jacket",
-      },
-      {
-        id: "Pv1JzFlF49QfwkNlA0r8",
-        skuCode: "C0900608",
-        quantity: "1",
-        productPermalink: "shirts-boxy-tailored-jacket",
-      },
-      {
-        id: "I7FnlhdKqb5l5FtDXJdI",
-        skuCode: "C0900601",
-        quantity: "1",
-        productPermalink: "shirts-boxy-tailored-jacket",
-      },
-    ];
-    const exitingItem = myCart.find((item) => item.skuCode == selectedSkuCode);
+    const exitingItem = cartList?.items?.find(
+      (item) => item.skuCode == selectedSkuCode
+    );
     try {
       // create new cart
       if (!localStorage.getItem("Cart")) {
@@ -118,7 +124,7 @@ function ProductDetail() {
         );
         console.log(respondData);
         localStorage.setItem("Cart", respondData?.data?.id);
-        // create exits cart
+        // create product to exits cart
       } else if (!exitingItem) {
         const currentId = localStorage.getItem("Cart");
         const respondData = await axios.post(
@@ -602,7 +608,7 @@ function ProductDetail() {
                       THB {products.promotionalPrice}.00
                     </p>
                   </div>
-                  <p className="text-lg font-semibold mb-[24px]">
+                  <p className="text-lg font-semibold mb-[28px]">
                     From{" "}
                     <span className="line-through ">
                       THB {products.price}.00
@@ -610,13 +616,27 @@ function ProductDetail() {
                   </p>
                 </div>
               )}
+              <div className="mb-[86px] lg:mb-[72px]">
+                <StyledRating
+                  readOnly
+                  value={products.ratings}
+                  precision={0.5}
+                  icon={<StarRoundedIcon fontSize="large" />}
+                  emptyIcon={
+                    <StarRoundedIcon
+                      fontSize="large"
+                      style={{ color: "#E1E1E1" }}
+                    />
+                  }
+                />
+              </div>
             </div>
           )}
 
           {/* color section */}
           {isLoading ? "" : <p className="text-secondary-700 mb-2">Color</p>}
 
-          <div className="flex justify-between mx-auto mb-6 lg:justify-normal lg:ml-4 lg:gap-[25px]">
+          <div className="flex justify-between mx-auto ml-3 mb-6 lg:justify-normal lg:ml-2 lg:gap-[25px]">
             {/* map สี จาก key สีใน object โดยสินค้าเข้าถึง key สีผ่าน Object.keys(productsData) */}
             {Object.keys(productsData).map((color) => {
               {
@@ -694,7 +714,7 @@ function ProductDetail() {
               {selectedSize !== "NULL" && (
                 <div className="mx-auto">
                   <p className="text-secondary-700 mb-2">Size</p>
-                  <div className="flex flex-wrap mb-6 gap-2 lg:gap-2 mx-8">
+                  <div className="flex flex-wrap mb-6 gap-2 ml-9 lg:gap-2">
                     {/* render ใหม่ตามสีที่ถูก selected จาก handleColorChange(color) หรือ default color (ครั้งแรก)*/}
                     {/*(productsData[selectedColor] syntax นี้ทำให้ได้ของทั้งหมดในภายใต้ [] หรือ key นั้นๆ )
                     "colorCode": "#0000Fl",
@@ -751,8 +771,8 @@ function ProductDetail() {
                 <div className="flex">
                   <p className="text-secondary-700 mb-2">Qty.</p>
                   <div
-                    className="tooltip tooltip-base-content"
-                    data-tip="Limit of 10 per order, please contact our customer service for larger orders."
+                    className="tooltip tooltip-right lg:tooltip-top"
+                    data-tip="Limit 10 per order, please contact our customer service for larger orders."
                   >
                     <button className="ml-2">
                       <svg
@@ -776,7 +796,7 @@ function ProductDetail() {
                 </div>
                 <div>
                   <select
-                    className={`border-[1px] h-[54px] w-full px-[10px] mb-6 lg:ml-8 lg:w-[156px]${
+                    className={`border-[1px] h-[54px] w-full px-[10px] mb-6 lg:w-[156px]${
                       // ? คือ Optional chaining (ES11) ทำการเช็ค object ที่เราต้องการอ่าน
                       // ว่ามีค่าหรือไม่หากไม่มีก็จะ fallback undefined ให้เราแทนที่จะ throw error
                       Object.values(
@@ -918,7 +938,7 @@ function ProductDetail() {
                 </div>
                 <div className="flex flex-col gap-4 lg:flex-row">
                   <button className="border bg-secondary-s text-white py-[14px] lg:basis-1/2">
-                    View cart
+                    <Link to="/cart">View cart</Link>
                   </button>
                   <div className="lg:basis-1/2">
                     <form method="dialog">
@@ -937,8 +957,11 @@ function ProductDetail() {
         </div>
       </div>
       {/* Another product section */}
-      <div className="mx-4 mb-20 lg:md-[64px]">
-        <h5 className="text-[31px] font-bold">People also like these</h5>
+      <div className="mx-4 mb-[70px] lg:mb-[220px]">
+        <h5 className="text-[31px] font-bold mb-10 lg:mb-[64px]">
+          People also like these
+        </h5>
+        <ProductRecommend />
       </div>
     </main>
   );
