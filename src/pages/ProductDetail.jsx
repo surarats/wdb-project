@@ -823,7 +823,12 @@ function ProductDetail() {
                 )}
                 {/* Quantity section */}
                 <div className="px-4">
-                  <p className="text-secondary-700 mb-2">Qty.</p>
+                  <div
+                    className="tooltip tooltip-right lg:tooltip-top"
+                    data-tip="Limit 10 per order, please contact our customer service for larger orders."
+                  >
+                    <p className="text-secondary-700 mb-2">Qty.</p>
+                  </div>
                   <div>
                     <select
                       className={`border-[1px] h-[54px] w-full px-[10px] mb-6 lg:w-[156px]${
@@ -909,8 +914,8 @@ function ProductDetail() {
                 Add to cart
               </button>
               <p className="text-secondary-700 text-[10px] mt-2 lg:mt-4 lg:text-[15px]">
-                limited of 10 pieces at a Purchases. For larger orders please
-                contact our customer service.
+                Limit 10 per order, please contact our customer service for
+                larger orders.
               </p>
             </div>
             {/* Modal */}
