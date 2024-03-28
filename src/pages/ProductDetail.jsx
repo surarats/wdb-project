@@ -89,7 +89,7 @@ function ProductDetail() {
       }
     };
     fetchData();
-  }, []);
+  }, [permalink]);
 
   const [cartList, setCartList] = useState({});
 
@@ -313,6 +313,9 @@ function ProductDetail() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor, selectedSize]);
+
+
+
 
   console.log(skuCode);
   console.log(colors);
