@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import CartItemSummary from "./CartItemSummary";
 import Skeleton from "@mui/material/Skeleton";
+import { checkCartContext } from "./Layout";
 
 function CartSummary({ cartList, products, isLoading }) {
   const [totalQty, setTotalQty] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
+  const { hasItem, setHasItem } = useContext(checkCartContext);
 
   const options = {
     style: "decimal",
@@ -136,7 +138,7 @@ function CartSummary({ cartList, products, isLoading }) {
         <Link
           to="/"
           className={`w-full grid place-content-center leading-5 h-[54px] py-[7px] px-2.5 ${
-            !cartList
+            !hasItem
               ? "disabled bg-[#e1e1e1] text-[#9f9f9f]"
               : "bg-[#222] text-white hover:bg-[#DEF81C] hover:text-[#222] !important}"
           }`}
@@ -146,7 +148,7 @@ function CartSummary({ cartList, products, isLoading }) {
         <Link
           to="/products/categories/all-men"
           className={`w-full grid place-content-center  leading-5 h-[54px] py-[7px] px-2.5 border border-[#e1e1e1] disabled ${
-            !cartList
+            !hasItem
               ? "disabled bg-[#fff] text-[#9f9f9f]"
               : "bg-white text-[#222] link-hover}"
           }`}
