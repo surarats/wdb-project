@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import CartEmpty from "../components/CartEmpty";
 import CartList from "../components/CartList";
 import CartSummary from "../components/CartSummary";
 import ProductRecommend from "./ProductRecommend";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import { checkCartContext } from "./Layout";
 
 function MyCart() {
   const [cartList, setCartList] = useState(undefined);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { hasItem, setHasItem } = useContext(checkCartContext);
 
   const cartId = localStorage.getItem("Cart");
 
@@ -28,6 +31,10 @@ function MyCart() {
       );
       temp.push(response.data);
     }
+    if (!temp.length > 0) {
+      localStorage.removeItem("Cart");
+      setHasItem(false);
+    }
     setProducts(temp);
     setIsLoading(false);
   };
@@ -37,7 +44,7 @@ function MyCart() {
   }, [cartId]);
 
   useEffect(() => {
-    if (cartList) fetchProductDetail();
+    fetchProductDetail();
   }, [cartList]);
 
   return (
@@ -49,8 +56,9 @@ function MyCart() {
         <div className="flex flex-col p-4 bg-white h-fit lg:w-3/5">
           <h2 className="font-bold text-2xl text-[#222] mb-6">Items</h2>
           <div className="flex flex-col gap-6 items-center text-[#222] lg:max-h-[600px] lg:overflow-y-scroll lg:scrollbar lg:pr-2">
-            {!cartList || !cartList.items.length > 0 || !products ? (
-              <CartEmpty />
+            {!hasItem ? (
+              //!cartList && !products.length > 0 ? (
+              <CartEmpty cartList={cartList} />
             ) : isLoading ? (
               <div className="flex flex-col justify-center items-center h-full">
                 <CircularProgress sx={{ color: "#e1e1e1" }} disableShrink />

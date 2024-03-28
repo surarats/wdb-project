@@ -1,11 +1,14 @@
-import react, { useState, useEffect } from "react";
+import react, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import axios from "axios";
+import { checkCartContext } from "./Layout";
 
 function Header() {
   const [categories, setCategories] = useState([]);
   const [isMenuToggle, setIsMenuToggle] = useState(false);
+
+  const { hasItem } = useContext(checkCartContext);
 
   const handleMenuToggle = () => {
     document.querySelector("body").style.overflow = isMenuToggle
@@ -28,19 +31,6 @@ function Header() {
   useEffect(() => {
     fetchCategories();
   }, []);
-
-  const [haveItemInCart, setHaveItemInCart] = useState(
-    localStorage.getItem("Cart") !== null
-  );
-
-  useEffect(() => {
-    const checkLocalStorage = () => {
-      const newItemInCart = localStorage.getItem("Cart") !== null;
-      setHaveItemInCart(newItemInCart);
-    };
-    const intervalId = setInterval(checkLocalStorage, 1000);
-    return () => clearInterval(intervalId);
-  }, [categories]);
 
   return (
     <header className="bg-[#222] fixed w-full top-0 left-0 z-50 ">
@@ -259,7 +249,7 @@ function Header() {
                 strokeLinejoin="round"
               />
             </svg>
-            {haveItemInCart ? (
+            {hasItem ? (
               <div className="bg-[#ff000d] w-[7px] h-[7px] rounded-full absolute top-[11px] left-[26px] z-10"></div>
             ) : (
               ""
