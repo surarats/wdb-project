@@ -348,7 +348,7 @@ function ProductDetail() {
   })(selectedQty, products);
 
   return (
-    <main className="mx-auto lg:max-w-[1600px] lg:min-h-screen">
+    <main className="mx-auto pt-[60px] lg:pt-[55px] lg:max-w-[1600px] lg:min-h-screen">
       {/* Div that wrap the image section and detail section */}
       <div className="mb-20 lg:flex lg:gap-10 lg:mb-[145px]">
         {/* Image section */}
