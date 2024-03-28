@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import Rating from "@mui/material/Rating";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import { styled } from "@mui/material/styles";
 import ProductRecommend from "../components/ProductRecommend";
+import { checkCartContext } from "../components/Layout";
 
 const StyledRating = styled(Rating)({
   "& .MuiRating-iconFilled": {
@@ -33,6 +34,8 @@ function ProductDetail() {
   const [sizes, setSizes] = useState([]);
   const [remains, setRemains] = useState([]);
   const [colorCode, setColorCode] = useState([]);
+
+  const { hasItem, setHasItem } = useContext(checkCartContext);
 
   //data after reformat
   const [productsData, setProductsData] = useState({});
@@ -121,6 +124,7 @@ function ProductDetail() {
           }
         );
         localStorage.setItem("Cart", respondData?.data?.id);
+        setHasItem(true);
         // create product to exits cart
       } else if (!exitingItem) {
         const currentId = localStorage.getItem("Cart");
