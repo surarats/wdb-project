@@ -1,5 +1,6 @@
 import React from "react";
 import ProductRecommend from "../components/ProductRecommend";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -52,9 +53,12 @@ function Home() {
               collection invites you to indulge in the allure of winter fashion.
             </p>
 
-            <div className="text-[16px] font-normal leading-5 text-white py-[17px] px-[10px] mb-[16px]">
+            <Link
+              to={"/"}
+              className="text-[16px] font-normal leading-5 text-white py-[17px] px-[10px] mb-[16px]"
+            >
               View More
-            </div>
+            </Link>
           </div>
           {/* Collection Photo2 */}
           <div
@@ -74,9 +78,12 @@ function Home() {
               sneakers is a celebration of urban chic.
             </p>
 
-            <div className="text-[16px] font-normal leading-5 text-white py-[17px] px-[10px] mb-[16px]">
+            <Link
+              to={"/"}
+              className="text-[16px] font-normal leading-5 text-white py-[17px] px-[10px] mb-[16px]"
+            >
               View More
-            </div>
+            </Link>
           </div>
         </div>
         <div className="flex flex-col">
