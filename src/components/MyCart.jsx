@@ -13,6 +13,8 @@ function MyCart() {
 
   const cartId = localStorage.getItem("Cart");
 
+
+
   const fetchCart = async () => {
     const response = await axios.get(
       `https://api.storefront.wdb.skooldio.dev/carts/${cartId}`
