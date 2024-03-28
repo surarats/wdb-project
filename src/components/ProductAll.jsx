@@ -27,8 +27,6 @@ function ProductAll({ manage, category, sort }) {
     }
   };
 
-  console.log(products);
-
   useEffect(() => {
     fetchProduct(manage, category, sort);
   }, [category, sort]);
