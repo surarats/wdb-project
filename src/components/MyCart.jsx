@@ -13,8 +13,6 @@ function MyCart() {
 
   const cartId = localStorage.getItem("Cart");
 
-
-
   const fetchCart = async () => {
     const response = await axios.get(
       `https://api.storefront.wdb.skooldio.dev/carts/${cartId}`
@@ -42,12 +40,7 @@ function MyCart() {
     if (cartList) fetchProductDetail();
   }, [cartList]);
 
-  return isLoading ? (
-    <div className="flex flex-col justify-center items-center min-h-screen pt-20 lg:pt-[98px] gap-4 ">
-      <CircularProgress sx={{ color: "#e1e1e1" }} disableShrink />
-      Loading
-    </div>
-  ) : (
+  return (
     <>
       <h1 className="font-bold text-[32px] text-[#222] leading-[48px] py-[34px] lg:ps-6 pt-20 lg:pt-[98px]">
         My cart
@@ -55,9 +48,14 @@ function MyCart() {
       <div className="flex flex-col gap-10 lg:flex-row mb-10 lg:mb-20">
         <div className="flex flex-col p-4 bg-white h-fit lg:w-3/5">
           <h2 className="font-bold text-2xl text-[#222] mb-6">Items</h2>
-          <div className="flex flex-col gap-6 items-center text-[#222] lg:h-[600px] lg:overflow-y-scroll lg:scrollbar lg:pr-2">
+          <div className="flex flex-col gap-6 items-center text-[#222] lg:max-h-[600px] lg:overflow-y-scroll lg:scrollbar lg:pr-2">
             {!cartList || !cartList.items.length > 0 || !products ? (
               <CartEmpty />
+            ) : isLoading ? (
+              <div className="flex flex-col justify-center items-center h-full">
+                <CircularProgress sx={{ color: "#e1e1e1" }} disableShrink />
+                Loading
+              </div>
             ) : (
               <CartList
                 cartList={cartList}
@@ -67,7 +65,11 @@ function MyCart() {
             )}
           </div>
         </div>
-        <CartSummary cartList={cartList} products={products} />
+        <CartSummary
+          cartList={cartList}
+          products={products}
+          isLoading={isLoading}
+        />
       </div>
 
       {!cartList && (

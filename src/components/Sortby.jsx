@@ -130,7 +130,7 @@ function Sortby({ manage, category }) {
             </div>
           </div>
           {desktopOptions.map((option, index) => (
-            <>
+            <React.Fragment key={index}>
               <div className="flex justify-start items-center">
                 <input
                   type="radio"
@@ -141,14 +141,13 @@ function Sortby({ manage, category }) {
                   name={option.label}
                 />
                 <label
-                  key={index}
                   className="text-[16px] leading-5 font-normal ml-4 my-3"
                   htmlFor={option.label}
                 >
                   {option.label}
                 </label>
               </div>
-            </>
+            </React.Fragment>
           ))}
           <div className="flex justify-center pb-[22px]">
             <button

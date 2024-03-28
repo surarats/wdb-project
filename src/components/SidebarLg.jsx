@@ -88,7 +88,7 @@ function SidebarLg() {
     <div className="flex flex-col w-[15%]">
       {/*Categories Parent*/}
       {categories.map((category) => (
-        <React.Fragment key={`${new Date().getTime}${category.id}`}>
+        <React.Fragment key={category.id}>
           {!category.parentId && (
             <div
               className="flex justify-between items-center py-3 cursor-pointer "
@@ -132,7 +132,7 @@ function SidebarLg() {
                     p.id === categoryAll.id && (
                       <div
                         className="flex flex-col justify-center gap-2"
-                        key={`${new Date().getTime}${categoryAll.id}`}
+                        key={categoryAll.id}
                       >
                         <Link
                           to={`/products/categories/${categoryAll.permalink}`}
@@ -157,7 +157,7 @@ function SidebarLg() {
                     p.id === categoryChild.parentId && (
                       <div
                         className="flex flex-col justify-center gap-2"
-                        key={`${new Date().getTime}${categoryChild.id}`}
+                        key={categoryChild.id}
                       >
                         <Link
                           to={`/products/categories/${categoryChild.permalink}`}
@@ -207,7 +207,7 @@ function SidebarLg() {
           collection.map((collectionChild) => (
             <div
               className="flex flex-col justify-center gap-2"
-              key={`${new Date().getTime}${collectionChild.id}`}
+              key={collectionChild.id}
             >
               <Link
                 to={`/products/collection/${collectionChild.permalink}`}
