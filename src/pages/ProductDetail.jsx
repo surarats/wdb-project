@@ -103,10 +103,8 @@ function ProductDetail() {
       setCartList(response.data);
     };
     if (cartID) {
-      console.log(cartID);
       fetchCart();
     }
-    console.log(cartID);
   }, []);
 
   const sentSelecedProductToCart = async () => {
@@ -122,7 +120,6 @@ function ProductDetail() {
             items: [{ skuCode: selectedSkuCode, quantity: selectedQty }],
           }
         );
-        console.log(respondData);
         localStorage.setItem("Cart", respondData?.data?.id);
         // create product to exits cart
       } else if (!exitingItem) {
@@ -131,7 +128,6 @@ function ProductDetail() {
           `https://api.storefront.wdb.skooldio.dev/carts/${currentId}/items`,
           { items: [{ skuCode: selectedSkuCode, quantity: selectedQty }] }
         );
-        console.log(respondData);
         // update exits item same spec
       } else {
         const id = exitingItem.id;
@@ -313,16 +309,6 @@ function ProductDetail() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor, selectedSize]);
-
-  console.log(skuCode);
-  console.log(colors);
-  console.log(sizes);
-  console.log(remains);
-  console.log(colorCode);
-  console.log(productsData);
-  console.log(selectedColor);
-  console.log(selectedSkuCode);
-  console.log(selectedQty);
 
   // Button function
   const nextButton = () => {
@@ -922,7 +908,10 @@ function ProductDetail() {
                 {/* document.getElementById("my_modal_5").showModal() */}
                 Add to cart
               </button>
-              <p className="text-secondary-700 text-[10px] mt-2 lg:mt-4 lg:text-[15px]">limited  of 10 pieces at a Purchases. For larger orders please contact our customer service.</p>
+              <p className="text-secondary-700 text-[10px] mt-2 lg:mt-4 lg:text-[15px]">
+                limited of 10 pieces at a Purchases. For larger orders please
+                contact our customer service.
+              </p>
             </div>
             {/* Modal */}
             <dialog id="my_modal_5" className="modal">
@@ -943,14 +932,14 @@ function ProductDetail() {
                         <path
                           d="M1 1L17 17"
                           stroke="#222222"
-                          stroke-width="2"
-                          stroke-linecap="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M17 1L1 17"
                           stroke="#222222"
-                          stroke-width="2"
-                          stroke-linecap="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
                         />
                       </svg>
                     </button>
