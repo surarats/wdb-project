@@ -219,7 +219,7 @@ function CartEmpty() {
       </div>
       <Link
         to="/products/categories/all-men"
-        className="bg-[#222] text-white h-[54px] py-[17px] px-2.5 lg:mb-[137px]"
+        className="bg-[#222] text-white h-[54px] py-[17px] px-2.5 lg:mb-[137px] hover:bg-[#DEF81C] hover:text-[#222] !important"
       >
         Continue shopping
       </Link>

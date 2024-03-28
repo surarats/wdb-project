@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-function CartItemSummary({ item, cartList }) {
-  const [product, setProduct] = useState({});
+function CartItemSummary({ item, cartList, products }) {
+  const [product, setProduct] = useState([]);
 
   const options = {
     style: "decimal",
@@ -10,16 +9,14 @@ function CartItemSummary({ item, cartList }) {
     maximumFractionDigits: 2,
   };
 
-  const fetchProductDetail = async (productPermalink) => {
-    const response = await axios.get(
-      `https://api.storefront.wdb.skooldio.dev/products/${productPermalink}`
-    );
-    setProduct(response.data);
-  };
-
   useEffect(() => {
-    fetchProductDetail(item.productPermalink);
-  }, []);
+    if (products.length > 0) {
+      const productItem = products.filter(
+        (product) => item.productPermalink === product.permalink
+      )?.[0];
+      setProduct(productItem);
+    }
+  }, [products]);
 
   return (
     <div className="flex flex-col gap-6 text-[#222]">
@@ -28,10 +25,9 @@ function CartItemSummary({ item, cartList }) {
           {product.name} x {item.quantity}
         </p>
         <p>
-          {(product.promotionalPrice * item.quantity).toLocaleString(
-            "en-US",
-            options
-          )}
+          {(
+            Number(product.promotionalPrice) * Number(item.quantity)
+          ).toLocaleString("en-US", options)}
         </p>
       </div>
     </div>
