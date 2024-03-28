@@ -1,43 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartItemSummary from "./CartItemSummary";
-import axios from "axios";
 
-function CartSummary({ cartList }) {
+function CartSummary({ cartList, products }) {
   const [totalQty, setTotalQty] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
-  // const [itemPrice, setItemPrice] = useState(0);
 
   const options = {
-    style: "decimal", // Other options: 'currency', 'percent', etc.
+    style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   };
 
-  const fetchPriceOfProduct = async (productPermalink) => {
-    const response = await axios.get(
-      `https://api.storefront.wdb.skooldio.dev/products/${productPermalink}`
-    );
-    return response.data.promotionalPrice;
-  };
-
-  let totalQtyResult = 0;
-  let totalPriceResult = 0;
   const calculateTotal = () => {
-    if (cartList) {
-      cartList.items.forEach(async (i) => {
-        let price = await fetchPriceOfProduct(i.productPermalink);
-        totalQtyResult += Number(i.quantity);
-        totalPriceResult += Number(price) * Number(i.quantity);
-        setTotalQty(totalQtyResult);
-        setSubtotal(totalPriceResult);
-      });
+    if (products.length > 0) {
+      let totalQtyResult = 0;
+      let totalPriceResult = 0;
+      if (cartList) {
+        cartList.items.forEach(async (item) => {
+          const product = products.filter(
+            (product) => item.productPermalink === product.permalink
+          )?.[0];
+          const price = product.promotionalPrice;
+          totalQtyResult += Number(item.quantity);
+          totalPriceResult += Number(price) * Number(item.quantity);
+          setTotalQty(totalQtyResult);
+          setSubtotal(totalPriceResult);
+        });
+      }
     }
   };
 
   useEffect(() => {
     calculateTotal();
-  }, [cartList]);
+  }, [products]);
 
   return (
     <div className="bg-white flex flex-col gap-10 p-6 h-fit lg:w-2/5">
@@ -86,7 +82,12 @@ function CartSummary({ cartList }) {
           </div>
 
           {cartList.items.map((item) => (
-            <CartItemSummary key={item.id} item={item} cartList={cartList} />
+            <CartItemSummary
+              key={item.id}
+              item={item}
+              cartList={cartList}
+              products={products}
+            />
           ))}
 
           <div className="border border-[#e1e1e1]"></div>
@@ -117,7 +118,7 @@ function CartSummary({ cartList }) {
           className={`w-full grid place-content-center leading-5 h-[54px] py-[7px] px-2.5 ${
             !cartList
               ? "disabled bg-[#e1e1e1] text-[#9f9f9f]"
-              : "bg-[#222] text-white link-hover}"
+              : "bg-[#222] text-white hover:bg-[#DEF81C] hover:text-[#222] !important}"
           }`}
         >
           Check out

@@ -7,7 +7,7 @@ function Home() {
       {/* Banner */}
       <div>
         <img
-          className="h-[166px] size-full object-cover bg-cover lg:h-[420px] lg:mb-[97px]"
+          className="h-[166px] size-full object-cover bg-cover lg:h-[420px] lg:mb-[97px]  "
           src="/images/banner.jpeg"
         ></img>
       </div>
