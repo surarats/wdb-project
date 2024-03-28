@@ -231,7 +231,7 @@ function Header() {
                 !category.parentId && (
                   <Link
                     to={`/products/categories/${category.permalink}`}
-                    key={`${new Date().getTime}${category.id}`}
+                    key={category.id}
                   >
                     <li className="py-3 pr-6 pl-0">{category.name}</li>
                   </Link>

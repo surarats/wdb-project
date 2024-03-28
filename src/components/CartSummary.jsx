@@ -1,42 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartItemSummary from "./CartItemSummary";
-import axios from "axios";
 
-function CartSummary({ cartList }) {
+function CartSummary({ cartList, products }) {
   const [totalQty, setTotalQty] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
-  // const [itemPrice, setItemPrice] = useState(0);
 
   const options = {
-    style: "decimal", // Other options: 'currency', 'percent', etc.
+    style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   };
 
-  const calculateTotal = (productPermalink) => {
-    let totalQtyResult = 0;
-    let totalPriceResult = 0;
-
-    if (cartList) {
-      cartList.items.forEach(async (i) => {
-        let price = await fetchPriceOfProduct(i.productPermalink);
-        console.log(price);
-        totalQtyResult = Number(totalQtyResult) + Number(i.quantity);
-        totalPriceResult =
-          Number(totalPriceResult) + Number(price) * Number(i.quantity);
-      });
-      console.log(totalPriceResult);
-      setTotalQty(totalQtyResult);
-      setSubtotal(totalPriceResult);
+  const calculateTotal = () => {
+    if (products.length > 0) {
+      let totalQtyResult = 0;
+      let totalPriceResult = 0;
+      if (cartList) {
+        cartList.items.forEach(async (item) => {
+          const product = products.filter(
+            (product) => item.productPermalink === product.permalink
+          )?.[0];
+          const price = product.promotionalPrice;
+          totalQtyResult += Number(item.quantity);
+          totalPriceResult += Number(price) * Number(item.quantity);
+          setTotalQty(totalQtyResult);
+          setSubtotal(totalPriceResult);
+        });
+      }
     }
   };
 
-  console.log(subtotal);
-
   useEffect(() => {
     calculateTotal();
-  }, [cartList]);
+  }, [products]);
 
   return (
     <div className="bg-white flex flex-col gap-10 p-6 h-fit lg:w-2/5">
@@ -86,10 +83,10 @@ function CartSummary({ cartList }) {
 
           {cartList.items.map((item) => (
             <CartItemSummary
-              key={new Date().getTime}
+              key={item.id}
               item={item}
-              setTotalQty={setTotalQty}
-              setSubtotal={setSubtotal}
+              cartList={cartList}
+              products={products}
             />
           ))}
 
@@ -121,7 +118,7 @@ function CartSummary({ cartList }) {
           className={`w-full grid place-content-center leading-5 h-[54px] py-[7px] px-2.5 ${
             !cartList
               ? "disabled bg-[#e1e1e1] text-[#9f9f9f]"
-              : "bg-[#222] text-white link-hover}"
+              : "bg-[#222] text-white hover:bg-[#DEF81C] hover:text-[#222] !important}"
           }`}
         >
           Check out
